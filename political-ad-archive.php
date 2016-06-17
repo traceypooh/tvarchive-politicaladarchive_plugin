@@ -31,7 +31,7 @@ if ( ! defined( 'WPINC' ) ) {
  */
 function activate_political_ad_archive() {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-political-ad-archive-activator.php';
-    Plugin_Name_Activator::activate();
+    PoliticalAdArchiveActivator::activate();
 }
 
 /**
@@ -40,7 +40,7 @@ function activate_political_ad_archive() {
  */
 function deactivate_political_ad_archive() {
     require_once plugin_dir_path( __FILE__ ) . 'includes/class-political-ad-archive-deactivator.php';
-    Plugin_Name_Deactivator::deactivate();
+    PoliticalAdArchiveDeactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_political_ad_archive' );

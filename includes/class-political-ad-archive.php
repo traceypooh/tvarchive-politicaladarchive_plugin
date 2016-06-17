@@ -56,7 +56,7 @@ class PoliticalAdArchive {
         $this->version = '1.0.0';
 
         $this->load_dependencies();
-        $this->set_locale();
+        $this->define_general_hooks();
         $this->define_admin_hooks();
         $this->define_public_hooks();
 
@@ -67,10 +67,9 @@ class PoliticalAdArchive {
      *
      * Include the following files that make up the plugin:
      *
-     * - Plugin_Name_Loader. Orchestrates the hooks of the plugin.
-     * - Plugin_Name_i18n. Defines internationalization functionality.
-     * - Plugin_Name_Admin. Defines all hooks for the admin area.
-     * - Plugin_Name_Public. Defines all hooks for the public side of the site.
+     * - PoliticalAdArchiveLoader. Orchestrates the hooks of the plugin.
+     * - PoliticalAdArchiveAdmin. Defines all hooks for the admin area.
+     * - PoliticalAdArchivePublic. Defines all hooks for the public side of the site.
      *
      * Create an instance of the loader which will be used to register the hooks
      * with WordPress.
@@ -97,6 +96,11 @@ class PoliticalAdArchive {
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-political-ad-archive-public.php';
 
+        /**
+         * The class responsible for defining all actions that are shared across both admin and public
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-political-ad-archive-general.php';
+
         $this->loader = new PoliticalAdArchiveLoader();
 
     }
@@ -112,9 +116,17 @@ class PoliticalAdArchive {
 
         $plugin_admin = new PoliticalAdArchiveAdmin( $this->get_plugin_name(), $this->get_version() );
 
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+        // Set up ACF
+        $this->loader->add_action( 'admin_notices', $plugin_admin, 'verify_acf_pro_enabled');
+        $this->loader->add_filter( 'acf/settings/load_json', $plugin_admin, 'add_acf_json_load_point' );
 
+        if(true)
+            $this->loader->add_filter( 'acf/settings/save_json', $plugin_admin, 'override_acf_json_save_point' );
+        
+
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_admin, 'load_canonical_ads' );
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_admin, 'load_ad_metadata' );
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_admin, 'load_ad_instances' );
     }
 
     /**
@@ -130,6 +142,20 @@ class PoliticalAdArchive {
 
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+    }
+
+    /**
+     * Register all of the hooks that are used both in admin and public contexts
+     * of the plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function define_general_hooks() {
+        $plugin_general = new PoliticalAdArchiveGeneral( $this->get_plugin_name(), $this->get_version() );
+
+        $this->loader->add_action( 'init', $plugin_general, 'register_archive_political_ad_type');
 
     }
 
