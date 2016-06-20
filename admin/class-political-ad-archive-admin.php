@@ -55,6 +55,20 @@ class PoliticalAdArchiveAdmin {
     }
 
     /**
+     * Register the admin page with settings for the political ad archive
+     */
+    public function register_admin_menu() {
+        if( function_exists('acf_add_options_page') ) {
+            acf_add_options_page(array(
+                'page_title' => 'Political Ad Archive Options',
+                'menu_title' => 'Political Ad Archive',
+                'menu_slug' => 'political-ad-archive',
+                'capability' => 'manage_options',
+                'parent_slug' => 'options-general.php'));
+        }
+    }
+
+    /**
      * Get the latest list of canonical ads from the Internet Archive
      */
     public function load_canonical_ads() {
@@ -100,6 +114,24 @@ class PoliticalAdArchiveAdmin {
             'post_status' => 'any',
             'numberposts' => -1
         ));
+        // Get a list of ad instances from the archive
+        $url = 'https://archive.org/advancedsearch.php?q=collection%3Apolitical_ads+AND+mediatype%3Amovies&fl%5B%5D=description&fl%5B%5D=identifier&sort%5B%5D=&sort%5B%5D=&sort%5B%5D=&rows=10000&page=1&output=json&save=yes';
+        $url_result = file_get_contents($url);
+        $results = json_decode($url_result);
+
+        // Convert results to an expected format
+        $transcripts = array();
+        if($results) {
+            if(property_exists($results, 'response')
+            && property_exists($results->response, 'docs')) {
+                foreach($results->response->docs as $result) {
+                    if(property_exists($result, 'identifier')
+                    && property_exists($result, 'description'))
+                        $transcripts[$result->identifier] = $result->description;
+                }
+            }
+        }
+        $transcript_lookup = $transcripts;
 
         // Always Load the transcript
         if(array_key_exists($ad_identifier, $transcript_lookup))
@@ -241,6 +273,22 @@ class PoliticalAdArchiveAdmin {
      */
     function load_ad_instances() {
         return;
+
+        // Get a list of ad instances from the archive
+        $url = 'https://archive.org/tv.php?chan2market=1&output=json';
+        $url_result = file_get_contents($url);
+        $results = json_decode($url_result);
+
+        // Convert results to an expected format
+        $networks = array();
+        foreach($results as $network => $values) {
+            $networks[$network] = array(
+                'market' => $values[0],
+                'location' => $values[1]
+            );
+        }
+        $network_lookup = $networks;
+
         global $wpdb;
         $existing_ads = get_posts(array(
             'post_type' => 'archive_political_ad',
@@ -254,7 +302,9 @@ class PoliticalAdArchiveAdmin {
 
             // STEP 2: Get every instance, and create a record for each instance
             // NOTE: it won't double insert when run more than once due to the unique key
-            $instances = get_ad_archive_instances($ad_identifier);
+            $url = 'https://archive.org/details/tv?ad_instances='.$ad_identifier.'&output=json';
+            $url_result = file_get_contents($url);
+            $instances = json_decode($url_result);
 
             // Load the overrides
             $start_override = get_field('start_override', $wp_identifier);
@@ -381,6 +431,160 @@ class PoliticalAdArchiveAdmin {
             update_field('field_566e3697962e3', $ad_network_count, $wp_identifier); // network_count
             update_field('field_566e36b0962e4', $ad_first_seen, $wp_identifier); // first_seen
             update_field('field_566e36d5962e5', $ad_last_seen,  $wp_identifier); // last_seen
+        }
+    }
+
+    public function load_candidates() {
+        global $wpdb;
+        $api_key = get_field('open_secrets_api_key', 'option');
+        $url = 'https://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
+
+        // Load existing candidates
+        $table_name = $wpdb->prefix . 'ad_candidates';
+
+        $query = "SELECT id as id,
+                         crp_unique_id as crp_unique_id
+                    FROM ".$table_name;
+
+        $results = $wpdb->get_results($query);
+        $existing_candidates = array();
+        foreach($results as $result) {
+            $existing_candidates[$result->crp_unique_id] = $result->id;
+        }
+
+        // Create the GET
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curl_result = curl_exec($ch);
+        curl_close ($ch);
+
+        // Parse the result
+        $result = json_decode($curl_result);
+
+        // Save the records
+        foreach($result->response->record as $sponsor) {
+            $sponsor = $sponsor->{'@attributes'};
+
+            // We only care about candidates
+            if($sponsor->type != "cand")
+                continue;
+
+            // Double check to make sure it fits the expected pattern
+            if(substr($sponsor->sponsorname, -1) != ")")
+                continue;
+
+            // Make sure the record is valid
+            if($sponsor->uniqueid == "")
+                continue;
+
+            $id = 0;
+            $name = substr($sponsor->sponsorname, 0, -4);
+            $affiliation = substr($sponsor->sponsorname, -2, 1);
+            $race = $sponsor->race;
+            $cycle = $sponsor->cycle;
+            $crp_unique_id = $sponsor->uniqueid;
+            $date_created = date("Y-m-d H:i:s");
+
+            $values = array(
+                'crp_unique_id' => $crp_unique_id,
+                'name' => $name,
+                'race' => $race,
+                'cycle' => $cycle,
+                'affiliation' => $affiliation,
+                'date_created' => $date_created
+            );
+
+            if(array_key_exists($crp_unique_id, $existing_candidates))
+                $values['id'] =$existing_candidates[$crp_unique_id];
+
+            $table_name = $wpdb->prefix . 'ad_candidates';
+            $wpdb->replace(
+                $table_name,
+                $values
+            );
+        }
+    }
+
+    public function load_sponsors() {
+        global $wpdb;
+        $api_key = get_field('open_secrets_api_key', 'option');
+        $url = 'https://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
+
+        // Load existing sponsors
+        $table_name = $wpdb->prefix . 'ad_sponsors';
+
+        $query = "SELECT id as id,
+                         crp_unique_id as crp_unique_id
+                    FROM ".$table_name;
+
+        $results = $wpdb->get_results($query);
+        $existing_sponsors = array();
+        foreach($results as $result) {
+            $existing_sponsors[$result->crp_unique_id] = $result->id;
+        }
+
+        // Create the GET
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curl_result = curl_exec($ch);
+        curl_close ($ch);
+
+        // Parse the result
+        $result = json_decode($curl_result);
+
+        // Process the result
+        $sponsors = array();
+
+        // Save the records
+        foreach($result->response->record as $sponsor) {
+            $sponsor = $sponsor->{'@attributes'};
+
+            // We only care about candidates
+            if($sponsor->type == "cand")
+                continue;
+            
+            // Make sure the record is valid
+            if($sponsor->uniqueid == "")
+                continue;
+
+            $name = $sponsor->sponsorname;
+            $race = $sponsor->race;
+            $cycle = $sponsor->cycle;
+            $crp_unique_id = $sponsor->uniqueid;
+            $type = $sponsor->type;
+            if($sponsor->c4 != "")
+                $type .= "4";
+            if($sponsor->c5 != "")
+                $type .= "5";
+            if($sponsor->c6 != "")
+                $type .= "6";
+
+            $single_ad_candidate_id = $sponsor->singlecandCID;
+            $does_support_candidate = ($sponsor->suppopp == "")?false:true;
+
+            $date_created = date("Y-m-d H:i:s");
+
+            $table_name = $wpdb->prefix . 'ad_sponsors';
+            $values = array(
+                'crp_unique_id' => $crp_unique_id,
+                'name' => $name,
+                'race' => $race,
+                'cycle' => $cycle,
+                'type' => $type,
+                'single_ad_candidate_id' => $single_ad_candidate_id,
+                'does_support_candidate' => $does_support_candidate,
+                'date_created' => $date_created
+            );
+
+            if(array_key_exists($crp_unique_id, $existing_sponsors))
+                $values['id'] =$existing_sponsors[$crp_unique_id];
+
+            $wpdb->replace(
+                $table_name,
+                $values
+            );
         }
     }
 

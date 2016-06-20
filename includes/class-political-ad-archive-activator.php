@@ -19,6 +19,8 @@ class PoliticalAdArchiveActivator {
      */
     public static function activate() {
         PoliticalAdArchiveActivator::create_ad_instances_table();
+        PoliticalAdArchiveActivator::create_ad_candidates_table();
+        PoliticalAdArchiveActivator::create_ad_sponsors_table();
         PoliticalAdArchiveActivator::activate_archive_sync();
     }
 
@@ -54,6 +56,61 @@ class PoliticalAdArchiveActivator {
             KEY market_key (market),
             KEY program_key (program),
             KEY program_type_key (program_type)
+        ) $charset_collate;";
+        dbDelta( $sql );
+    }
+
+    private static function create_ad_candidates_table() {
+        global $wpdb;
+        global $ad_db_version;
+        // Wordpress doesn't load upgrade.php by default
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        // Create the ad instances data table
+        $table_name = $wpdb->prefix . 'ad_candidates';
+
+        $charset_collate = $wpdb->get_charset_collate();
+        $sql = "CREATE TABLE $table_name (
+            id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            crp_unique_id varchar(100) NOT NULL,
+            name varchar(128),
+            race char(4),
+            cycle char(4),
+            affiliation char(1),
+            date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            UNIQUE KEY crp_unique_key (crp_unique_id),
+            KEY name_key (name),
+            KEY race_key (race),
+            KEY affiliation_key (affiliation)
+        ) $charset_collate;";
+        dbDelta( $sql );
+    }
+
+    private static function create_ad_sponsors_table() {
+        global $wpdb;
+        global $ad_db_version;
+        // Wordpress doesn't load upgrade.php by default
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+        // Create the ad instances data table
+        $table_name = $wpdb->prefix . 'ad_sponsors';
+
+        $charset_collate = $wpdb->get_charset_collate();
+        $sql = "CREATE TABLE $table_name (
+            id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            crp_unique_id varchar(100) NOT NULL,
+            name varchar(128),
+            race char(4),
+            cycle char(4),
+            type varchar(16),
+            single_ad_candidate_id varchar(100),
+            does_support_candidate tinyint(1),
+            date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            UNIQUE KEY crp_unique_key (crp_unique_id),
+            KEY single_ad_candidate_key (single_ad_candidate_id),
+            KEY name_key (name),
+            KEY type_key (type),
+            KEY race_key (race)
         ) $charset_collate;";
         dbDelta( $sql );
     }

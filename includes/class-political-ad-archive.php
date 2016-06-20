@@ -118,15 +118,18 @@ class PoliticalAdArchive {
 
         // Set up ACF
         $this->loader->add_action( 'admin_notices', $plugin_admin, 'verify_acf_pro_enabled');
+        $this->loader->add_action( 'admin_menu', $plugin_admin, 'register_admin_menu', 1);
         $this->loader->add_filter( 'acf/settings/load_json', $plugin_admin, 'add_acf_json_load_point' );
 
         if(true)
             $this->loader->add_filter( 'acf/settings/save_json', $plugin_admin, 'override_acf_json_save_point' );
-        
 
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_admin, 'load_canonical_ads' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_admin, 'load_ad_metadata' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_admin, 'load_ad_instances' );
+
+        $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_candidates' );
+        $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_sponsors' );
+        $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_canonical_ads' );
+        $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_ad_metadata' );
+        $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_ad_instances' );
     }
 
     /**
