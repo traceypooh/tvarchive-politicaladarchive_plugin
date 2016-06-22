@@ -101,6 +101,12 @@ class PoliticalAdArchive {
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-political-ad-archive-general.php';
 
+        /**
+         * Load in the model files
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-candidate.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-sponsor.php';
+
         $this->loader = new PoliticalAdArchiveLoader();
 
     }
@@ -130,6 +136,10 @@ class PoliticalAdArchive {
         $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_canonical_ads' );
         $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_ad_metadata' );
         $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_ad_instances' );
+        
+        // Set up admin interface hooks
+        $this->loader->add_action( 'admin_notices', $plugin_admin, 'check_ad_metadata' );
+        
     }
 
     /**
