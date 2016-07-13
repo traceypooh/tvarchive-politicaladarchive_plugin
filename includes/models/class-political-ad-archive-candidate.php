@@ -16,7 +16,7 @@ class PoliticalAdArchiveCandidate {
 		global $wpdb;
 	}
 
-	public static function getCandidateByName($name) {
+	public static function get_candidate_by_name($name) {
 		global $wpdb;
 
         $table_name = $wpdb->prefix . 'ad_candidates';

@@ -107,6 +107,12 @@ class PoliticalAdArchive {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-candidate.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-sponsor.php';
 
+
+        /**
+         * Load in the api files
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-instances.php';
+
         $this->loader = new PoliticalAdArchiveLoader();
 
     }
@@ -155,6 +161,10 @@ class PoliticalAdArchive {
 
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+        $this->loader->add_action( 'init', $plugin_public, 'register_api_routes' );
+        $this->loader->add_filter( 'query_vars', $plugin_public, 'filter_api_query_vars' );
+        $this->loader->add_action( 'parse_request', $plugin_public, 'parse_request' );
 
     }
 

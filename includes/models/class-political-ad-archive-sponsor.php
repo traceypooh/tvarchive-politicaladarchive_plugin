@@ -16,7 +16,7 @@ class PoliticalAdArchiveSponsor {
 		global $wpdb;
 	}
 
-	public static function getSponsorByName($name) {
+	public static function get_sponsor_by_name($name) {
 		global $wpdb;
 
         $table_name = $wpdb->prefix . 'ad_sponsors';
