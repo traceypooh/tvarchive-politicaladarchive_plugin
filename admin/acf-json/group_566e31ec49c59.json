@@ -127,6 +127,22 @@
                     "disabled": 0
                 },
                 {
+                    "key": "field_56b76a70c2594",
+                    "label": "Candidate Image",
+                    "name": "candidate_image",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": ""
+                },
+                {
                     "key": "field_56b8b33887ec3",
                     "label": "Ad Candidate Message",
                     "name": "ad_candidate_message",
@@ -426,6 +442,48 @@
             ]
         },
         {
+            "key": "field_56e62a2127943",
+            "label": "Ad Race",
+            "name": "ad_race",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": "",
+            "readonly": 0,
+            "disabled": 0
+        },
+        {
+            "key": "field_56e62a2927944",
+            "label": "Ad Cycle",
+            "name": "ad_cycle",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": "",
+            "readonly": 0,
+            "disabled": 0
+        },
+        {
             "key": "field_5719467568b97",
             "label": "Start Override",
             "name": "start_override",
@@ -460,11 +518,11 @@
             "first_day": 0
         },
         {
-            "key": "field_576368cd22146",
+            "key": "field_5787f9fbe5eda",
             "label": "Queue for Reset",
             "name": "queue_for_reset",
             "type": "true_false",
-            "instructions": "This field indicates that this ad's metadata should be reloaded from the Internet Archive and other 3rd party sources",
+            "instructions": "Check this box to reload the metadata for this ad during the next sync.",
             "required": 0,
             "conditional_logic": 0,
             "wrapper": {
@@ -473,7 +531,7 @@
                 "id": ""
             },
             "message": "",
-            "default_value": 0
+            "default_value": 1
         }
     ],
     "location": [
@@ -493,5 +551,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1466449201
+    "modified": 1468531038
 }

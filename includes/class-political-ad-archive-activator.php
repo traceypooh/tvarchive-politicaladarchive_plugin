@@ -77,11 +77,14 @@ class PoliticalAdArchiveActivator {
             race char(4),
             cycle char(4),
             affiliation char(1),
+            ad_count int,
+            air_count int,
             date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             UNIQUE KEY crp_unique_key (crp_unique_id),
             KEY name_key (name),
             KEY race_key (race),
-            KEY affiliation_key (affiliation)
+            KEY affiliation_key (affiliation),
+            KEY air_count_key (air_count)
         ) $charset_collate;";
         dbDelta( $sql );
     }
@@ -105,12 +108,15 @@ class PoliticalAdArchiveActivator {
             type varchar(16),
             single_ad_candidate_id varchar(100),
             does_support_candidate tinyint(1),
+            ad_count int,
+            air_count int,
             date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             UNIQUE KEY crp_unique_key (crp_unique_id),
             KEY single_ad_candidate_key (single_ad_candidate_id),
             KEY name_key (name),
             KEY type_key (type),
-            KEY race_key (race)
+            KEY race_key (race),
+            KEY air_count_key (air_count)
         ) $charset_collate;";
         dbDelta( $sql );
     }

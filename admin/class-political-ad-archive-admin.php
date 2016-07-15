@@ -61,11 +61,11 @@ class PoliticalAdArchiveAdmin {
             return;
 
         // Check sponsors
-        $sponsors = get_field('ad_sponsors', $post->ID);
+        $sponsors = get_field('ad_sponsors', $post->ID) ?: array();
 
         foreach($sponsors as $sponsor) {
             $sponsor_name = $sponsor["ad_sponsor"];
-            $sponsor_object = PoliticalAdArchiveSponsor::getSponsorByName($sponsor_name);
+            $sponsor_object = PoliticalAdArchiveSponsor::get_sponsor_by_name($sponsor_name);
             if(!$sponsor_object) {
                 $class = 'notice notice-error';
                 $message = __( 'WARNING: A sponsor does not have metadata in the sponsors table ('. $sponsor_name.')', 'political-ad-archive' );
@@ -74,11 +74,11 @@ class PoliticalAdArchiveAdmin {
         } 
 
         // Check candidates
-        $candidates = get_field('ad_candidates', $post->ID);
+        $candidates = get_field('ad_candidates', $post->ID) ?: array();
 
         foreach($candidates as $candidate) {
             $candidate_name = $candidate["ad_candidate"];
-            $candidate_object = PoliticalAdArchiveCandidate::getCandidateByName($candidate_name);
+            $candidate_object = PoliticalAdArchiveCandidate::get_candidate_by_name($candidate_name);
             if(!$candidate_object) {
                 $class = 'notice notice-error';
                 $message = __( 'WARNING: A candidate does not have metadata in the candidates table ('. $candidate_name.')', 'political-ad-archive' );
@@ -136,10 +136,10 @@ class PoliticalAdArchiveAdmin {
      * Load metadata for canonical ads
      */
     public function load_ad_metadata() {
+        error_log("Loading Ad Metadata");
         global $wpdb;
         $transcript_lookup = $this->get_transcripts();
         $canonical_ad_lookup = $this->get_ad_list();
-        $air_metadata_lookup = $this->get_air_metadata();
 
         $existing_ads = get_posts(array(
             'post_type' => 'archive_political_ad',
@@ -152,6 +152,9 @@ class PoliticalAdArchiveAdmin {
             $ad_identifier = $existing_ad->post_title;
             $is_queued_for_reset = get_field('queue_for_reset', $wp_identifier);
 
+            if($is_queued_for_reset === null)
+                $is_queued_for_reset = true;
+
             // Load the latest transcript
             if(array_key_exists($ad_identifier, $transcript_lookup)) {
                 $transcript = $transcript_lookup[$ad_identifier];
@@ -160,6 +163,7 @@ class PoliticalAdArchiveAdmin {
 
             if($is_queued_for_reset
             && array_key_exists($ad_identifier, $canonical_ad_lookup)) {
+                error_log("Refreshing metadata for ".$ad_identifier);
                 $metadata = $canonical_ad_lookup[$ad_identifier]->json;
                 $ad_embed_url = 'https://archive.org/embed/'.$ad_identifier;
                 $ad_type = "Political Ad";
@@ -216,32 +220,8 @@ class PoliticalAdArchiveAdmin {
                 update_field('field_569d12c8487ee', $subjects, $wp_identifier); // Subjects
 
                 // Mark this as reset
-                update_field('field_576368cd22146', false); // Queued for reset
+                update_field('field_5787f9fbe5eda', false, $wp_identifier); // Queued for reset
             }
-
-            // Update ad airing metadata every time
-            if(array_key_exists($ad_identifier, $air_metadata_lookup)) {
-                $air_metadata = $air_metadata_lookup[$ad_identifier];
-                $ad_air_count = $air_metadata->air_count;
-                $ad_market_count = $air_metadata->market_count;
-                $ad_network_count = $air_metadata->network_count;
-                $ad_first_seen = date('Ymd', strtotime($air_metadata->first_seen));
-                $ad_last_seen = date('Ymd', strtotime($air_metadata->last_seen));
-            }
-            else {
-                $ad_air_count = 0;
-                $ad_market_count = 0;
-                $ad_network_count = 0;
-                $ad_first_seen = '';
-                $ad_last_seen = '';
-            }
-
-            // Note: the keys here are defined by the Advanced Custom Fields settings
-            update_field('field_566e3659fb227', $ad_air_count, $wp_identifier); // air_count
-            update_field('field_566e367e962e2', $ad_market_count, $wp_identifier); // market_count
-            update_field('field_566e3697962e3', $ad_network_count, $wp_identifier); // network_count
-            update_field('field_566e36b0962e4', $ad_first_seen, $wp_identifier); // first_seen
-            update_field('field_566e36d5962e5', $ad_last_seen,  $wp_identifier); // last_seen
         }
     }
 
@@ -250,7 +230,7 @@ class PoliticalAdArchiveAdmin {
      * Then update the ad counts
      */
     public function load_ad_instances() {
-        return;
+        error_log("Loading Ad Instances");
         global $wpdb;
         $network_lookup = $this->get_network_lookup();
         $market_translations = $this->get_market_translations();
@@ -266,6 +246,27 @@ class PoliticalAdArchiveAdmin {
         foreach($existing_ads as $existing_ad) {
             $wp_identifier = $existing_ad->ID;
             $ad_identifier = $existing_ad->post_title;
+
+            // Get the list of instances alraedy stored to prevent duplicate entry attempts
+            $table_name = $wpdb->prefix . 'ad_instances';
+            $query = "SELECT id as id,
+                             network as network,
+                             start_time as start_time,
+                             archive_identifier as archive_identifier,
+                             wp_identifier as wp_identifier
+                        FROM ".$table_name."
+                       WHERE archive_identifier = '".esc_sql($ad_identifier)."'";
+            $results = $wpdb->get_results($query);
+
+            $existing_instances = array();
+            foreach($results as $result) {
+                $network = $result->network;
+                $start_time = $result->start_time;
+                if(!array_key_exists($network, $existing_instances)) {
+                    $existing_instances[$network] = array();
+                }
+                $existing_instances[$network][] = "".strtotime($start_time);
+            }
 
             // STEP 2: Get every instance, and create a record for each instance
             // NOTE: it won't double insert when run more than once due to the unique key
@@ -287,6 +288,11 @@ class PoliticalAdArchiveAdmin {
                 $date_created = date("Y-m-d H:i:s");
                 $program = $instance->title;
                 $program_type = $instance->program_type;
+
+                // Does this instance already exist in our database?
+                if(array_key_exists($network, $existing_instances)
+                && array_search("".strtotime($start_time), $existing_instances[$network]) !== false)
+                    continue;
 
                 // If the start time isn't within the override range, skip this airing
                 if($start_override != null
@@ -328,9 +334,69 @@ class PoliticalAdArchiveAdmin {
                 $wpdb->query($query);
             }
         }
+
+        // Prep the table names
+        $candidates_table = $wpdb->prefix . 'ad_candidates';
+        $sponsors_table = $wpdb->prefix . 'ad_sponsors';
+        $instances_table = $wpdb->prefix . 'ad_instances';
+        $postmeta_table = $wpdb->prefix . 'postmeta';
+
+        // Update ad air counts
+        $query = "SELECT count(*) as air_count,
+                         count(DISTINCT network) as network_count,
+                         count(DISTINCT market) as market_count,
+                         MIN(start_time) as first_seen,
+                         MAX(start_time) as last_seen,
+                         wp_identifier as wp_identifier
+                    FROM ".$instances_table."
+                GROUP BY wp_identifier";
+
+        $results = $wpdb->get_results($query);
+        $air_metadata = array();
+        foreach($results as $result) {
+            update_field('field_566e3659fb227', $result->air_count, $wp_identifier); // air_count
+            update_field('field_566e367e962e2', $result->market_count, $wp_identifier); // market_count
+            update_field('field_566e3697962e3', $result->network_count, $wp_identifier); // network_count
+            update_field('field_566e36b0962e4', $result->first_seen, $wp_identifier); // first_seen
+            update_field('field_566e36d5962e5', $result->last_seen,  $wp_identifier); // last_seen
+        }
+
+        // Update candidate air counts
+        $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
+                         count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
+                         meta_value as ad_candidate
+                    FROM ".$postmeta_table."
+                    JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
+                   WHERE meta_key LIKE 'ad_candidates_%_ad_candidate'
+                GROUP BY ".$postmeta_table.".meta_value";
+
+        $results = $wpdb->get_results($query);
+        $air_metadata = array();
+        foreach($results as $result) {
+            $query = "UPDATE ".$candidates_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_candidate)."'";
+            $wpdb->query($query);
+        }
+        
+        // Update sponsor air counts
+        $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
+                         count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
+                         meta_value as ad_sponsor
+                    FROM ".$postmeta_table."
+                    JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
+                   WHERE meta_key LIKE 'ad_sponsors_%_ad_sponsor'
+                GROUP BY ".$postmeta_table.".meta_value";
+
+        $results = $wpdb->get_results($query);
+        $air_metadata = array();
+        foreach($results as $result) {
+            $query = "UPDATE ".$sponsors_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_sponsor)."'";
+            $wpdb->query($query);
+        }
+        
     }
 
     public function load_candidates() {
+        error_log("Loading Candidates");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
         $url = 'https://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
@@ -403,6 +469,7 @@ class PoliticalAdArchiveAdmin {
     }
 
     public function load_sponsors() {
+        error_log("Loading Sponsors");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
         $url = 'https://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
@@ -588,7 +655,6 @@ class PoliticalAdArchiveAdmin {
     private function get_air_metadata() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'ad_instances';
-
         $query = "SELECT count(*) as air_count,
                          count(DISTINCT network) as network_count,
                          count(DISTINCT market) as market_count,
