@@ -5,7 +5,7 @@
  *
  * @since      1.0.0
  * @package    PoliticalAdArchive
- * @subpackage PoliticalAdArchive/includes
+ * @subpackage PoliticalAdArchive/includes/models
  * @author     Daniel Schultz <dan.schultz@archive.org>
  */
 class PoliticalAdArchiveCandidate {
