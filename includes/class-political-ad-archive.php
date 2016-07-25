@@ -102,16 +102,29 @@ class PoliticalAdArchive {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-political-ad-archive-general.php';
 
         /**
+         * Load in support objects
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/interface-political-ad-archive-buffered-query.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/models/class-political-ad-archive-api-response.php';
+
+        /**
          * Load in the model files
          */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-ad.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-candidate.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-sponsor.php';
 
+        /**
+         * Load in the search tools
+         */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-ad-search.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-ad-instance-search.php';
 
         /**
          * Load in the api files
          */
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-instances.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-ads.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-ad-instances.php';
 
         $this->loader = new PoliticalAdArchiveLoader();
 

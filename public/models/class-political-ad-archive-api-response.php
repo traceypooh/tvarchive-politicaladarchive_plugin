@@ -16,7 +16,7 @@ class PoliticalAdArchiveApiResponse {
 	private $data; // The array of data to be included
 	private $format; // The format that the data should be printed as
 
-	public function PoliticalAdArchiveResponseBuffer($data, $format) {
+	public function PoliticalAdArchiveApiResponse($data, $format) {
 		$this->data = $data;
 		$this->format = $format;
 	}
@@ -71,7 +71,6 @@ class PoliticalAdArchiveApiResponse {
 
 		// Send the buffered query
 		if($this->data instanceof PoliticalAdArchiveBufferedQuery) {
-
 			$page = 0;
 		    while(true) {
 
@@ -84,7 +83,11 @@ class PoliticalAdArchiveApiResponse {
 
 		    	// Are we done?
 				if(sizeof($chunk) == 0)
-					exit;
+					break;
+
+				if($page > 0)
+	                echo(",");
+
 
 				// Send the chunk
 		        $this->send_chunk($chunk);
@@ -118,7 +121,11 @@ class PoliticalAdArchiveApiResponse {
 	    }
 	}
 
-	private function send_chunk() {
+	private function send_chunk($rows) {
+		if(!is_array($rows)
+		|| sizeof($rows) == 0)
+			return;
+
 		switch($this->format) {
 	        case PoliticalAdArchiveApiResponse::FORMAT_CSV:
 	            // loop over the rows, outputting them
@@ -133,8 +140,6 @@ class PoliticalAdArchiveApiResponse {
 	        case PoliticalAdArchiveApiResponse::FORMAT_JSON:
 	            // strip the array braces
 	            $json = substr(json_encode($rows), 1, -1);
-	            if($page > 0)
-	                echo(",");
 	            echo($json);
 	            break;
 	    }

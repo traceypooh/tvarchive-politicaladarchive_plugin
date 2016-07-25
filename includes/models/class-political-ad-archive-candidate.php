@@ -34,11 +34,15 @@ class PoliticalAdArchiveCandidate {
 		return $this;
 	}
 
+	public static function generate_full_candidate($candidate) {
+
+	}
+
 	/**
 	 * Returns a list of candidates
 	 * @return [type] [description]
 	 */
-	public static function getCandidates() {
+	public static function get_candidates() {
 		global $wpdb;
 
 		// Run the query
@@ -78,6 +82,34 @@ class PoliticalAdArchiveCandidate {
         $result = $wpdb->get_row($query);
 
         return $result;
+	}
+
+	public static function get_candidates_by_names($names) {
+		global $wpdb;
+
+		// Sanitize the names
+		$sanitized_names = array();
+		foreach($names as $name) {
+			$sanitized_names[] = "'".esc_sql($name)."'";
+		}
+
+		if(sizeof($sanitized_names) == 0)
+			return array();
+
+        $table_name = $wpdb->prefix . 'ad_candidates';
+        $query = "SELECT *
+                    FROM ".$table_name."
+                    WHERE name IN (".implode(", ", $sanitized_names).")";
+        $result = $wpdb->get_results($query);
+        return $result;
+	}
+
+	public static function get_candidates_by_acf_field_value($candidates_field) {
+		$candidate_names = array();
+		foreach($candidates_field as $candidate_field) {
+			$candidate_names[] = $candidate_field['ad_candidate'];
+		}
+		return self::get_candidates_by_names($candidate_names);
 	}
 
 }
