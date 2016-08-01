@@ -146,7 +146,7 @@ class PoliticalAdArchive {
         $this->loader->add_action( 'admin_menu', $plugin_admin, 'register_admin_menu', 1);
         $this->loader->add_filter( 'acf/settings/load_json', $plugin_admin, 'add_acf_json_load_point' );
 
-        if(true)
+        if(class_exists('acf'))
             $this->loader->add_filter( 'acf/settings/save_json', $plugin_admin, 'override_acf_json_save_point' );
 
 
