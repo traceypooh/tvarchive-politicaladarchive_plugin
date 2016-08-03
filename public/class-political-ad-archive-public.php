@@ -50,6 +50,7 @@ class PoliticalAdArchivePublic {
         // Go through all the API routes
         PoliticalAdArchiveApiGetAds::register_route();
         PoliticalAdArchiveApiGetAdInstances::register_route();
+        PoliticalAdArchiveApiGetMarketCounts::register_route();
     }
 
     public function filter_api_query_vars( $query_vars ) {
@@ -57,6 +58,7 @@ class PoliticalAdArchivePublic {
         // Go through all the API filters
         $query_vars = PoliticalAdArchiveApiGetAds::filter_query_vars($query_vars);
         $query_vars = PoliticalAdArchiveApiGetAdInstances::filter_query_vars($query_vars);
+        $query_vars = PoliticalAdArchiveApiGetMarketCounts::filter_query_vars($query_vars);
 
         return $query_vars;
     }
@@ -66,6 +68,7 @@ class PoliticalAdArchivePublic {
         // Go through all the API parsers
         PoliticalAdArchiveApiGetAds::parse_request($wp);
         PoliticalAdArchiveApiGetAdInstances::parse_request($wp);
+        PoliticalAdArchiveApiGetMarketCounts::parse_request($wp);
     }
 
 }
