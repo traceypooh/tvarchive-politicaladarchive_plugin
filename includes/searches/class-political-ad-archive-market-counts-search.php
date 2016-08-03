@@ -13,7 +13,7 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 	private $posts_per_page;
 
 	public function PoliticalAdArchiveAdMarketCountsSearch($args = null) {
-		$this->posts_per_page = 3000;
+
 	}
 
 	public function __get($property) {
@@ -34,20 +34,23 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 
         global $wpdb;
 
-        // Collect the counts of ads
+        // Collect the counts of ads per market
         $table_name = $wpdb->prefix.'ad_instances';
         $query = "SELECT
-                  COUNT(*) AS ad_count
-                  ,market AS market_code
-                  ,location AS location
-                  FROM ".$table_name.
-                  "GROUP BY market";
+                  COUNT(*) as ad_count
+                  ,market as market_code
+                  ,location as location
+                  FROM ".$table_name."
+                  GROUP BY market_code";
         $results = $wpdb->get_results($query);
 	    $rows = array();
-	    foreach($results as $market) {
-	    	$rows[] = $this->generate_row($market);
+	    foreach($results as $market_result) {
+	    	$rows[] = $this->generate_row($market_result);
 	    }
-	    return $rows;
+      if ($page < 1){
+        return $rows;
+      }
+
 	}
 
 	private function generate_row($row) {
