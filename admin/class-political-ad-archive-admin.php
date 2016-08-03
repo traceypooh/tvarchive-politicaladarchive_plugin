@@ -84,7 +84,7 @@ class PoliticalAdArchiveAdmin {
                 $message = __( 'WARNING: A candidate does not have metadata in the candidates table ('. $candidate_name.')', 'political-ad-archive' );
                 printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
             }
-        } 
+        }
     }
 
     /**
