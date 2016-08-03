@@ -38,10 +38,10 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
         $table_name = $wpdb->prefix.'ad_instances';
         $query = "SELECT
                   COUNT(*) AS ad_count
-                  ,market as market
-                  ,location as location
+                  ,market AS market_code
+                  ,location AS location
                   FROM ".$table_name.
-                  "GROUP BY market"
+                  "GROUP BY market";
         $results = $wpdb->get_results($query);
 	    $rows = array();
 	    foreach($results as $market) {
@@ -57,7 +57,7 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 
         // Create the row
         $parsed_row = [
-            "market" => $market_code,
+            "market_code" => $market_code,
             "location" => $location,
             "ad_count" => $ad_count,
         ];
