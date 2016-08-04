@@ -292,9 +292,10 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		if(sizeof($this->message_filters) > 0) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->message_filters,
-				'ad_message'
+				'ad_message',
+				true
 			);
-		    $ids = array_intersect($ids, $filtered_ids, true);
+		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
 		if(sizeof($this->type_filters) > 0) {
@@ -303,7 +304,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 				'ad_type',
 				true
 			);
-		    $ids = array_intersect($ids, $filtered_ids, true);
+		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
 		if(sizeof($this->archive_id_filters) > 0) {
@@ -312,7 +313,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 				'archive_id',
 				true
 			);
-		    $ids = array_intersect($ids, $filtered_ids, true);
+		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
 		if(sizeof($this->network_filters) > 0) {
@@ -321,7 +322,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 				'network',
 				true
 			);
-		    $ids = array_intersect($ids, $filtered_ids, true);
+		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
 		if(sizeof($this->market_filters) > 0) {
@@ -330,7 +331,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 				'market',
 				true
 			);
-		    $ids = array_intersect($ids, $filtered_ids, true);
+		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
 		if(sizeof($this->location_filters) > 0) {
