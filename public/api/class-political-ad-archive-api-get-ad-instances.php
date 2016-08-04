@@ -30,6 +30,7 @@ class PoliticalAdArchiveApiGetAdInstances {
 
 	    	// Add in filters
 	    	$search->word_filters = array_key_exists('word_filter',$_GET)?$_GET['word_filter']:array();
+	    	$search->archive_id_filters = array_key_exists('archive_id',$_GET)?$_GET['archive_id']:array();
 			$search->candidate_filters = array_key_exists('candidate_filter',$_GET)?$_GET['candidate_filter']:array();
 			$search->sponsor_filters = array_key_exists('sponsor_filter',$_GET)?$_GET['sponsor_filter']:array();
 			$search->sponsor_type_filters = array_key_exists('sponsor_type_filter',$_GET)?$_GET['sponsor_type_filter']:array();

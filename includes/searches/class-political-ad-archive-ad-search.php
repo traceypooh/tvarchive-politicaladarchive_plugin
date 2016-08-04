@@ -26,6 +26,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	private $channel_filters = array();
 	private $program_filters = array();
 	private $transcript_filters = array();
+	private $archive_id_filters = array();
 
 	// filter cache stores the results of the filter (a list of post IDs)
 	private $_filter_cache = array();
@@ -244,18 +245,28 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	    // Run the additive filters
 	    if(sizeof($this->word_filters) > 0) {
 	    	$ids = array_unique(
-	    		$this->run_meta_filter($this->word_filters,'ad_candidates_%_ad_candidate'),
-	    		$this->run_meta_filter($this->word_filters,'ad_sponsors_%ad_sponsor'),
-	    		$this->run_sponsor_filter($this->word_filters, "type", true),
-	    		$this->run_meta_filter($this->word_filters, 'ad_subjects_%_ad_subject'),
-	    		$this->run_meta_filter($this->word_filters, 'ad_message'),
-	    		$this->run_meta_filter($this->word_filters, 'ad_type', true),
-	    		$this->run_meta_filter($this->word_filters, 'archive_id', true),
-	    		$this->run_meta_filter($this->word_filters, 'transcript')
+	    		array_merge(
+		    		$this->run_meta_filter($this->word_filters,'ad_candidates_%_ad_candidate'),
+		    		$this->run_meta_filter($this->word_filters,'ad_sponsors_%ad_sponsor'),
+		    		$this->run_sponsor_filter($this->word_filters, "type", true),
+		    		$this->run_meta_filter($this->word_filters, 'ad_subjects_%_ad_subject'),
+		    		$this->run_meta_filter($this->word_filters, 'ad_message'),
+		    		$this->run_meta_filter($this->word_filters, 'ad_type', true),
+		    		$this->run_meta_filter($this->word_filters, 'archive_id', true),
+		    		$this->run_meta_filter($this->word_filters, 'transcript')
+		    	)
 	    	);
 	    }
 
 		// Run the subtractive filters
+		if(sizeof($this->archive_id_filters) > 0) {
+			$filtered_ids = $this->run_meta_filter(
+				$this->archive_id_filters,
+				'archive_id'
+			);
+		    $ids = array_intersect($ids, $filtered_ids);
+	    }
+
 		if(sizeof($this->candidate_filters) > 0) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->candidate_filters,
