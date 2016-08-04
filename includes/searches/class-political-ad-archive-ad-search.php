@@ -199,7 +199,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
             $subquery = "
 	             SELECT * from ".$instances_table."
 	    		  WHERE ".$instances_table.".".$field." LIKE '".($exact_match?"":"%").esc_sql($filter['term']).($exact_match?"":"%")."'
-	    			AND ".$instances_table.".post_id = ".$posts_table.".ID";
+	    			AND ".$instances_table.".wp_identifier = ".$posts_table.".ID";
 
             switch($filter['boolean']) {
             	case 'not':
