@@ -11,8 +11,9 @@
 class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQuery {
 
 	private $posts_per_page;
+    private $ad_ids;
 
-	public function PoliticalAdArchiveAdInstanceSearch($args = null) {
+	public function PoliticalAdArchiveAdInstanceSearch() {
 		$this->posts_per_page = 3000;
 	}
 
@@ -31,7 +32,6 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 	}
 
 	public function get_chunk($page) {
-
         global $wpdb;
 
         // Collect the data associated with this ad
@@ -47,8 +47,15 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
                          archive_identifier as archive_identifier,
                          wp_identifier as wp_identifier,
                          date_created as date_created
-                    FROM ".$table_name."
-                    LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
+                    FROM ".$table_name;
+
+        if(is_array($this->ad_ids)) {
+            if(sizeof($this->ad_ids) == 0)
+                $this->ad_ids = array(-1);
+            $query .= " WHERE wp_identifier IN (".implode(",", $this->ad_ids).") ";
+        }
+        $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
+
         $results = $wpdb->get_results($query);
 	    $rows = array();
 	    foreach($results as $ad_instance) {
@@ -56,6 +63,9 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 	    }
 	    return $rows;
 	}
+
+    private function get_filtered_ad_ids() {
+    }
 
 	private function generate_row($row) {
         $wp_identifier = $row->wp_identifier;

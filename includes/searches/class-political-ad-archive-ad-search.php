@@ -229,7 +229,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	    return $filtered_ids;
 	}
 
-	private function get_filtered_ids() {
+	public function get_filtered_ids() {
 		// Return the cached values if they exist
 		if($this->_filter_cache != null)
 			return $this->_filter_cache;

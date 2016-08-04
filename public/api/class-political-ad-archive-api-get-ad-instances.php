@@ -25,11 +25,28 @@ class PoliticalAdArchiveApiGetAdInstances {
 
 	public static function parse_request( &$wp ) {
 	    if ( array_key_exists( self::$endpoint_code, $wp->query_vars ) ) {
+	    	// Set up the ad search
+	    	$search = new PoliticalAdArchiveAdSearch();
+
+	    	// Add in filters
+	    	$search->word_filters = array_key_exists('word_filter',$_GET)?$_GET['word_filter']:array();
+			$search->candidate_filters = array_key_exists('candidate_filter',$_GET)?$_GET['candidate_filter']:array();
+			$search->sponsor_filters = array_key_exists('sponsor_filter',$_GET)?$_GET['sponsor_filter']:array();
+			$search->sponsor_type_filters = array_key_exists('sponsor_type_filter',$_GET)?$_GET['sponsor_type_filter']:array();
+			$search->subject_filters = array_key_exists('subject_filter',$_GET)?$_GET['subject_filter']:array();
+			$search->type_filters = array_key_exists('type_filter',$_GET)?$_GET['type_filter']:array();
+			$search->market_filters = array_key_exists('market_filter',$_GET)?$_GET['market_filter']:array();
+			$search->channel_filters = array_key_exists('channel_filter',$_GET)?$_GET['channel_filter']:array();
+			$search->program_filters = array_key_exists('program_filter',$_GET)?$_GET['program_filter']:array();
+			$search->transcript_filters = array_key_exists('transcript_filter',$_GET)?$_GET['transcript_filter']:array();
+
+
 	    	// Set up the search
-	    	$search = new PoliticalAdArchiveAdInstanceSearch();
+	    	$instance_search = new PoliticalAdArchiveAdInstanceSearch();
+	    	$instance_search->ad_ids = $search->get_filtered_ids();
 
 	    	// Set up the response
-	        $response = new PoliticalAdArchiveApiResponse($search, PoliticalAdArchiveApiResponse::FORMAT_JSON);
+	        $response = new PoliticalAdArchiveApiResponse($instance_search, PoliticalAdArchiveApiResponse::FORMAT_JSON);
 	        $response->send();
 	        exit();
 	    }
