@@ -120,6 +120,8 @@ class PoliticalAdArchive {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-ad-search.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-ad-instance-search.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-market-counts-search.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-candidate-search.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-sponsor-search.php';
 
         /**
          * Load in the api files
@@ -127,6 +129,8 @@ class PoliticalAdArchive {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-ads.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-ad-instances.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-market-counts.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-candidates.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-sponsors.php';
 
         $this->loader = new PoliticalAdArchiveLoader();
 

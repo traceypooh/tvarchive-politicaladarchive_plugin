@@ -51,6 +51,8 @@ class PoliticalAdArchivePublic {
         PoliticalAdArchiveApiGetAds::register_route();
         PoliticalAdArchiveApiGetAdInstances::register_route();
         PoliticalAdArchiveApiGetMarketCounts::register_route();
+        PoliticalAdArchiveApiGetCandidates::register_route();
+        PoliticalAdArchiveApiGetSponsors::register_route();
     }
 
     public function filter_api_query_vars( $query_vars ) {
@@ -59,6 +61,8 @@ class PoliticalAdArchivePublic {
         $query_vars = PoliticalAdArchiveApiGetAds::filter_query_vars($query_vars);
         $query_vars = PoliticalAdArchiveApiGetAdInstances::filter_query_vars($query_vars);
         $query_vars = PoliticalAdArchiveApiGetMarketCounts::filter_query_vars($query_vars);
+        $query_vars = PoliticalAdArchiveApiGetCandidates::filter_query_vars($query_vars);
+        $query_vars = PoliticalAdArchiveApiGetSponsors::filter_query_vars($query_vars);
 
         return $query_vars;
     }
@@ -69,6 +73,8 @@ class PoliticalAdArchivePublic {
         PoliticalAdArchiveApiGetAds::parse_request($wp);
         PoliticalAdArchiveApiGetAdInstances::parse_request($wp);
         PoliticalAdArchiveApiGetMarketCounts::parse_request($wp);
+        PoliticalAdArchiveApiGetCandidates::parse_request($wp);
+        PoliticalAdArchiveApiGetSponsors::parse_request($wp);
     }
 
 }
