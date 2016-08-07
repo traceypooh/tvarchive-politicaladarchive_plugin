@@ -119,12 +119,14 @@ class PoliticalAdArchive {
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-ad-search.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-ad-instance-search.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/searches/class-political-ad-archive-market-counts-search.php';
 
         /**
          * Load in the api files
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-ads.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-ad-instances.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/api/class-political-ad-archive-api-get-market-counts.php';
 
         $this->loader = new PoliticalAdArchiveLoader();
 
@@ -155,10 +157,10 @@ class PoliticalAdArchive {
         $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_canonical_ads' );
         $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_ad_metadata' );
         $this->loader->add_action( 'archive_sync', $plugin_admin, 'load_ad_instances' );
-        
+
         // Set up admin interface hooks
         $this->loader->add_action( 'admin_notices', $plugin_admin, 'check_ad_metadata' );
-        
+
     }
 
     /**
