@@ -50,7 +50,7 @@ class PoliticalAdArchiveAdmin {
         if( ! class_exists('acf') && is_admin()) {
             $class = 'notice notice-error';
             $message = __( 'ACF Pro is required for the Political Ad Archive plugin to function.', 'political-ad-archive' );
-            printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); 
+            printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
         }
     }
 
@@ -71,7 +71,7 @@ class PoliticalAdArchiveAdmin {
                 $message = __( 'WARNING: A sponsor does not have metadata in the sponsors table ('. $sponsor_name.')', 'political-ad-archive' );
                 printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
             }
-        } 
+        }
 
         // Check candidates
         $candidates = get_field('ad_candidates', $post->ID) ?: array();
@@ -376,7 +376,7 @@ class PoliticalAdArchiveAdmin {
             $query = "UPDATE ".$candidates_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_candidate)."'";
             $wpdb->query($query);
         }
-        
+
         // Update sponsor air counts
         $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
                          count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
@@ -392,14 +392,14 @@ class PoliticalAdArchiveAdmin {
             $query = "UPDATE ".$sponsors_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_sponsor)."'";
             $wpdb->query($query);
         }
-        
+
     }
 
     public function load_candidates() {
         error_log("Loading Candidates");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
-        $url = 'https://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
+        $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
 
         // Load existing candidates
         $table_name = $wpdb->prefix . 'ad_candidates';
@@ -418,11 +418,17 @@ class PoliticalAdArchiveAdmin {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 400);
         $curl_result = curl_exec($ch);
-        curl_close ($ch);
+        error_log(curl_error($ch));
+        curl_close($ch);
 
         // Parse the result
-        $result = json_decode($curl_result);
+
+          error_log($url);
+
+          $result = json_decode($curl_result);
 
         // Save the records
         foreach($result->response->record as $sponsor) {
@@ -472,7 +478,7 @@ class PoliticalAdArchiveAdmin {
         error_log("Loading Sponsors");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
-        $url = 'https://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
+        $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
 
         // Load existing sponsors
         $table_name = $wpdb->prefix . 'ad_sponsors';
