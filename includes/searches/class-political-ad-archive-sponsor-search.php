@@ -36,13 +36,15 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
 
         // Collect the counts of ads per market
         $table_name = $wpdb->prefix.'ad_sponsors';
-        $query = "SELECT
-                  ad_count as ad_count
-                  ,name as name
-                  ,race as race
-                  ,type as type
+        $query = "SELECT *
                   FROM ".$table_name."
-                  GROUP BY name";
+                  JOIN (SELECT DISTINCT wp_postmeta.meta_value as meta_value FROM wp_postmeta
+                    JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID
+                    WHERE wp_postmeta.meta_key LIKE 'ad_sponsors_%ad_sponsor'
+                    AND wp_posts.post_status = 'publish')
+                  as t ON ".$table_name.".name = t.meta_value
+                  GROUP BY name
+                  ORDER BY ad_count DESC";
         $results = $wpdb->get_results($query);
 	    $rows = array();
 	    foreach($results as $sponsor_result) {
