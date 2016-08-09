@@ -12,6 +12,8 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
 	private $posts_per_page;
     private $ad_ids;
+    private $start_time;
+    private $end_time;
 
 	public function PoliticalAdArchiveAdInstanceSearch() {
 		$this->posts_per_page = 3000;
@@ -49,11 +51,22 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
                          date_created as date_created
                     FROM ".$table_name;
 
+        $query_conditions = array();
         if(is_array($this->ad_ids)) {
             if(sizeof($this->ad_ids) == 0)
                 $this->ad_ids = array(-1);
-            $query .= " WHERE wp_identifier IN (".implode(",", $this->ad_ids).") ";
+            $query_conditions[] = "wp_identifier IN (".implode(",", $this->ad_ids).")";
         }
+
+        if($this->start_time != null)
+            $query_conditions[] = "end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($this->start_time)))."'";
+        
+        if($this->end_time != null)
+            $query_conditions[] = "start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
+
+        if(sizeof($query_conditions) > 0)
+            $query .= " WHERE ".implode(" AND ", $query_conditions);
+
         $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
 
         $results = $wpdb->get_results($query);

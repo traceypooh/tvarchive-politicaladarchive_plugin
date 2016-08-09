@@ -11,6 +11,7 @@
 class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
 	private $posts_per_page;
+	private $pages = array();
 
 	// Make it possible to specify filters for the search
 	// These are all arrays of tuples:
@@ -52,6 +53,9 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	private function parse_filter($filter) {
 		if(is_array($filter))
 			return $filter;
+
+		// replace commas with " OR "
+		$filter = str_replace(",", " OR ", $filter);
 		$query_boolean_parts = preg_split("/(\sAND\s|\sOR\s|\sNOT\s)/", $filter, -1, PREG_SPLIT_DELIM_CAPTURE);
 
 		$filter_array = array();
@@ -76,6 +80,14 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
 	public function get_chunk($page) {
 		$filtered_ids = $this->get_filtered_ids();
+
+		// Do we only want specific pages
+		if(sizeof($this->pages) > 0) {
+			// Are we done
+			if(!(array_key_exists($page, $this->pages)))
+				return array();
+			$page = $this->pages[$page];
+		}
 
 	    $args = array(
 	        'post_type'      => 'archive_political_ad',

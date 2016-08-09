@@ -16,6 +16,8 @@ class PoliticalAdArchiveCandidate {
 	private $race; // The political race the candidate participated in
 	private $cycle; // The time period the candidate ran
 	private $affiliation; // The political party affiliation of the candidate
+	private $ad_count; // Number of unique ads
+	private $air_count; // Number of unique airings	
 	private $date_created; // The date this record was created in this system
 
 	public function PoliticalAdArchiveCandidate() {}
@@ -47,9 +49,16 @@ class PoliticalAdArchiveCandidate {
 
 		// Run the query
         $candidates_table = $wpdb->prefix . 'ad_candidates';
-        $query = "SELECT ".$candidates_table.".*,
-                    FROM ".$table_name;
-
+        $posts_table = $wpdb->prefix . 'posts';
+        $meta_table = $wpdb->prefix . 'postmeta';
+        $query = "SELECT ".$candidates_table.".*
+                    FROM ".$candidates_table."
+				    JOIN (SELECT DISTINCT ".$meta_table.".meta_value as meta_value
+				            FROM ".$meta_table."
+				            JOIN ".$posts_table." ON ".$meta_table.".post_id = ".$posts_table.".ID
+				           WHERE ".$meta_table.".meta_key LIKE 'ad_candidates_%ad_candidate'
+				             AND ".$posts_table.".post_status = 'publish') as t
+				      ON ".$candidates_table.".name = t.meta_value";
         $results = $wpdb->get_results($query);
 
         // Package the results
@@ -62,6 +71,8 @@ class PoliticalAdArchiveCandidate {
         	$candidate->race = $result->race;
         	$candidate->cycle = $result->cycle;
         	$candidate->affiliation = $result->affiliation;
+        	$candidate->ad_count = $result->ad_count;
+        	$candidate->air_count = $result->air_count;
         	$candidate->date_created = $result->date_created;
         	$candidates[] = $candidate;
         }

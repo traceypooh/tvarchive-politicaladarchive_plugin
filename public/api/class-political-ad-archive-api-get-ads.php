@@ -28,6 +28,11 @@ class PoliticalAdArchiveApiGetAds {
 	    	// Set up the search
 	    	$search = new PoliticalAdArchiveAdSearch();
 
+	    	if(array_key_exists('per_page',$_GET))
+	    		$search->posts_per_page = $_GET['per_page'];
+	    	if(array_key_exists('page', $_GET))
+	    		$search->pages = array($_GET['page']);
+
 	    	// Add in filters
 	    	$search->word_filters = array_key_exists('word_filter',$_GET)?$_GET['word_filter']:array();
 			$search->candidate_filters = array_key_exists('candidate_filter',$_GET)?$_GET['candidate_filter']:array();
@@ -41,7 +46,7 @@ class PoliticalAdArchiveApiGetAds {
 			$search->transcript_filters = array_key_exists('transcript_filter',$_GET)?$_GET['transcript_filter']:array();
 
 	    	// Set up the response
-	        $response = new PoliticalAdArchiveApiResponse($search, PoliticalAdArchiveApiResponse::FORMAT_JSON);
+	        $response = new PoliticalAdArchiveApiResponse($search, ($_GET['output']=="csv"?PoliticalAdArchiveApiResponse::FORMAT_CSV:PoliticalAdArchiveApiResponse::FORMAT_JSON));
 	        $response->send();
 	        exit();
 	    }
