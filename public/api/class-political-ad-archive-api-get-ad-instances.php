@@ -60,7 +60,7 @@ class PoliticalAdArchiveApiGetAdInstances {
 			}
 
 	    	// Set up the response
-	        $response = new PoliticalAdArchiveApiResponse($instance_search, $output));
+	        $response = new PoliticalAdArchiveApiResponse($instance_search, $output);
 	        $response->send();
 	        exit();
 	    }
