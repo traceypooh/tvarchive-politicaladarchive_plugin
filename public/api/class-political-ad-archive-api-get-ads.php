@@ -45,8 +45,15 @@ class PoliticalAdArchiveApiGetAds {
 			$search->program_filters = array_key_exists('program_filter',$_GET)?$_GET['program_filter']:array();
 			$search->transcript_filters = array_key_exists('transcript_filter',$_GET)?$_GET['transcript_filter']:array();
 
+			if(array_key_exists('output', $_GET)
+			&& $_GET['output']=="csv") {
+				$output = PoliticalAdArchiveApiResponse::FORMAT_CSV;
+			} else {
+				$output = PoliticalAdArchiveApiResponse::FORMAT_JSON;
+			}
+
 	    	// Set up the response
-	        $response = new PoliticalAdArchiveApiResponse($search, ($_GET['output']=="csv"?PoliticalAdArchiveApiResponse::FORMAT_CSV:PoliticalAdArchiveApiResponse::FORMAT_JSON));
+	        $response = new PoliticalAdArchiveApiResponse($search, $output));
 	        $response->send();
 	        exit();
 	    }

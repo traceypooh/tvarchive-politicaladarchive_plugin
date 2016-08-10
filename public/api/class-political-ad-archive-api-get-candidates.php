@@ -29,9 +29,9 @@ class PoliticalAdArchiveApiGetCandidates {
         $search = new PoliticalAdArchiveAdCandidateSearch();
 
         // Set up the response
-          $response = new PoliticalAdArchiveApiResponse($search, PoliticalAdArchiveApiResponse::FORMAT_JSON);
-          $response->send();
-          exit();
+        $response = new PoliticalAdArchiveApiResponse($search, PoliticalAdArchiveApiResponse::FORMAT_JSON);
+        $response->send();
+        exit();
       }
   }
 
