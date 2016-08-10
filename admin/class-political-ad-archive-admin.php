@@ -105,6 +105,9 @@ class PoliticalAdArchiveAdmin {
      * Get the latest list of canonical ads from the Internet Archive
      */
     public function load_canonical_ads() {
+        // This script runs in the background and should be allowed to run as long as needed
+        set_time_limit(0);
+
         // Get a list of ad instances from the archive
         $canonical_ads = $this->get_ad_list();
 
@@ -136,6 +139,9 @@ class PoliticalAdArchiveAdmin {
      * Load metadata for canonical ads
      */
     public function load_ad_metadata() {
+        // This script runs in the background and should be allowed to run as long as needed
+        set_time_limit(0);
+
         error_log("Loading Ad Metadata");
         global $wpdb;
         $transcript_lookup = $this->get_transcripts();
@@ -230,6 +236,9 @@ class PoliticalAdArchiveAdmin {
      * Then update the ad counts
      */
     public function load_ad_instances() {
+        // This script runs in the background and should be allowed to run as long as needed
+        set_time_limit(0);
+
         error_log("Loading Ad Instances");
         global $wpdb;
         $network_lookup = $this->get_network_lookup();
@@ -396,6 +405,9 @@ class PoliticalAdArchiveAdmin {
     }
 
     public function load_candidates() {
+        // This script runs in the background and should be allowed to run as long as needed
+        set_time_limit(0);
+
         error_log("Loading Candidates");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
@@ -475,6 +487,9 @@ class PoliticalAdArchiveAdmin {
     }
 
     public function load_sponsors() {
+        // This script runs in the background and should be allowed to run as long as needed
+        set_time_limit(0);
+
         error_log("Loading Sponsors");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
