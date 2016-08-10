@@ -49,7 +49,7 @@ class PoliticalAdArchiveApiResponse {
 	        case PoliticalAdArchiveApiResponse::FORMAT_CSV:
 	            // output headers so that the file is downloaded rather than displayed
 	            header('Content-Type: text/csv; charset=utf-8');
-	            header('Content-Disposition: attachment; filename='.$filename.'.csv');
+	            header('Content-Disposition: attachment; filename='.time().'_export.csv');
 	            break;
 	        case PoliticalAdArchiveApiResponse::FORMAT_JSON:
 	            header('Content-Type: application/json');
