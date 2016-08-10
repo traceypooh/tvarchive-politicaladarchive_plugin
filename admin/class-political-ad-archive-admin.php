@@ -433,14 +433,10 @@ class PoliticalAdArchiveAdmin {
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
         curl_setopt($ch, CURLOPT_TIMEOUT, 400);
         $curl_result = curl_exec($ch);
-        error_log(curl_error($ch));
         curl_close($ch);
 
         // Parse the result
-
-          error_log($url);
-
-          $result = json_decode($curl_result);
+        $result = json_decode($curl_result);
 
         // Save the records
         foreach($result->response->record as $sponsor) {
