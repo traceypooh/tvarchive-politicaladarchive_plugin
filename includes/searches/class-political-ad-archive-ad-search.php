@@ -251,7 +251,8 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		$ids = get_posts(array(
 			'fields' => 'ids',
 	        'post_status' => 'publish',
-	        'post_type'   => 'archive_political_ad'
+	        'post_type'   => 'archive_political_ad',
+	        'numberposts' => -1
 	    ));
 
 	    // Run the additive filters
