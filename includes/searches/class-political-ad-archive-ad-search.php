@@ -406,7 +406,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
             "reference_count" => $ad->references,
             "market_count" => $ad->market_count,
             "transcript" => $ad->transcript,
-            "date_ingested" => $ad->ingest_date
+            "date_ingested" => $ad->date_ingested
         ];
 
 		return $parsed_row;
