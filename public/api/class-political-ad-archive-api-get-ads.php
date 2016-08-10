@@ -53,7 +53,7 @@ class PoliticalAdArchiveApiGetAds {
 			}
 
 	    	// Set up the response
-	        $response = new PoliticalAdArchiveApiResponse($search, $output));
+	        $response = new PoliticalAdArchiveApiResponse($search, $output);
 	        $response->send();
 	        exit();
 	    }
