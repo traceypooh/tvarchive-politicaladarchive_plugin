@@ -77,5 +77,12 @@ class PoliticalAdArchivePublic {
         PoliticalAdArchiveApiGetSponsors::parse_request($wp);
     }
 
+    public function enqueue_styles () {
+        // This is handled by the loader
+    }
+    public function enqueue_scripts () {
+        // This is handled by the loader
+    }
+
 }
 ?>

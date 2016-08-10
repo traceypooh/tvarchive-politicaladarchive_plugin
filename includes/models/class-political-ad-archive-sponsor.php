@@ -53,7 +53,7 @@ class PoliticalAdArchiveSponsor {
 				             AND ".$posts_table.".post_status = 'publish') as t
 				      ON ".$sponsors_table.".name = t.meta_value";
 
-        $results = $wpdb->get_row($query);
+        $results = $wpdb->get_results($query);
 
         // Package the results
         $sponsors = array();
