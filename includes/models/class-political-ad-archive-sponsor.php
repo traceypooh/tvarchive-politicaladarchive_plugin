@@ -120,7 +120,6 @@ class PoliticalAdArchiveSponsor {
                     WHERE name IN (".implode(",",$sanitized_names).")";
 
         $result = $wpdb->get_results($query);
-
         return $result;
 	}
 
