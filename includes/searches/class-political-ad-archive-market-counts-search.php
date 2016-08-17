@@ -11,6 +11,8 @@
 class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBufferedQuery {
 
 	private $posts_per_page;
+  private $start_time;
+  private $end_time;
 
 	public function PoliticalAdArchiveAdMarketCountsSearch($args = null) {
 
@@ -31,26 +33,45 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 	}
 
 	public function get_chunk($page) {
+    global $wpdb;
 
-        global $wpdb;
+    // This query isn't paged
+    if($page >= 1)
+      return array();
 
-        // Collect the counts of ads per market
-        $table_name = $wpdb->prefix.'ad_instances';
-        $query = "SELECT
-                  COUNT(*) as ad_count
-                  ,market as market_code
-                  ,location as location
-                  FROM ".$table_name."
-                  GROUP BY market_code";
-        $results = $wpdb->get_results($query);
-	    $rows = array();
-	    foreach($results as $market_result) {
-	    	$rows[] = $this->generate_row($market_result);
-	    }
-      if ($page < 1){
-        return $rows;
-      }
+    $published_ad_ids = get_posts(array(
+      'fields' => 'ids',
+      'post_status' => 'publish',
+      'post_type'   => 'archive_political_ad',
+      'numberposts' => -1
+    ));
 
+    // Collect the counts of ads per market
+    $table_name = $wpdb->prefix.'ad_instances';
+    $query = "SELECT
+              COUNT(*) as ad_count
+              ,market as market_code
+              ,location as location
+              FROM ".$table_name;
+    
+    $query_conditions = array();
+    $query_conditions[] = "wp_identifier IN (".implode(",", $published_ad_ids).")";
+    if($this->start_time != null)
+        $query_conditions[] = "end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($this->start_time)))."'";
+    
+    if($this->end_time != null)
+        $query_conditions[] = "start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
+
+    if(sizeof($query_conditions) > 0)
+        $query .= " WHERE ".implode(" AND ", $query_conditions);
+
+    $query.= " GROUP BY market_code";
+    $results = $wpdb->get_results($query);
+    $rows = array();
+    foreach($results as $market_result) {
+    	$rows[] = $this->generate_row($market_result);
+    }
+    return $rows;
 	}
 
 	private function generate_row($row) {
