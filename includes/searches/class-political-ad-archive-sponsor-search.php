@@ -32,28 +32,30 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
 
 	public function get_chunk($page) {
 
-        global $wpdb;
+    global $wpdb;
 
-        // Collect the counts of ads per market
-        $table_name = $wpdb->prefix.'ad_sponsors';
-        $query = "SELECT *
-                  FROM ".$table_name."
-                  JOIN (SELECT DISTINCT wp_postmeta.meta_value as meta_value FROM wp_postmeta
-                    JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID
-                    WHERE wp_postmeta.meta_key LIKE 'ad_sponsors_%ad_sponsor'
-                    AND wp_posts.post_status = 'publish')
-                  as t ON ".$table_name.".name = t.meta_value
-                  GROUP BY name
-                  ORDER BY ad_count DESC";
-        $results = $wpdb->get_results($query);
-	    $rows = array();
-	    foreach($results as $sponsor_result) {
-	    	$rows[] = $this->generate_row($sponsor_result);
-	    }
-      if ($page < 1){
-        return $rows;
-      }
-
+    // Collect the counts of ads per market
+    $postmeta_table = $wpdb->prefix . 'postmeta';
+    $post_table = $wpdb->prefix . 'posts';
+    $sponsors_table = $wpdb->prefix.'ad_sponsors';
+    
+    // Collect the counts of ads per market
+    $query = "SELECT ".$sponsors_table.".*
+                FROM ".$sponsors_table."
+                JOIN ".$postmeta_table." ON ".$postmeta_table.".meta_value = ".$sponsors_table.".name
+                JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
+               WHERE ".$postmeta_table.".meta_key LIKE 'ad_sponsors_%ad_sponsor'
+                 AND ".$post_table.".post_status = 'publish'
+            GROUP BY name
+            ORDER BY ad_count DESC";
+    $results = $wpdb->get_results($query);
+    $rows = array();
+    foreach($results as $sponsor_result) {
+    	$rows[] = $this->generate_row($sponsor_result);
+    }
+    if ($page < 1){
+      return $rows;
+    }
 	}
 
 	private function generate_row($row) {

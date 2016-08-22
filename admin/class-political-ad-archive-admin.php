@@ -252,95 +252,100 @@ class PoliticalAdArchiveAdmin {
         ));
 
         // For each ad, load the ad instances associated
-        foreach($existing_ads as $existing_ad) {
-            $wp_identifier = $existing_ad->ID;
-            $ad_identifier = $existing_ad->post_title;
+        foreach($existing_ads as $count => $existing_ad) {
+            error_log("(".$count."/".sizeof($existing_ads).")"." Loading Instances for ".$existing_ad->post_title);
+            try {
+                $wp_identifier = $existing_ad->ID;
+                $ad_identifier = $existing_ad->post_title;
 
-            // Get the list of instances alraedy stored to prevent duplicate entry attempts
-            $table_name = $wpdb->prefix . 'ad_instances';
-            $query = "SELECT id as id,
-                             network as network,
-                             start_time as start_time,
-                             archive_identifier as archive_identifier,
-                             wp_identifier as wp_identifier
-                        FROM ".$table_name."
-                       WHERE archive_identifier = '".esc_sql($ad_identifier)."'";
-            $results = $wpdb->get_results($query);
+                // Get the list of instances alraedy stored to prevent duplicate entry attempts
+                $table_name = $wpdb->prefix . 'ad_instances';
+                $query = "SELECT id as id,
+                                 network as network,
+                                 start_time as start_time,
+                                 archive_identifier as archive_identifier,
+                                 wp_identifier as wp_identifier
+                            FROM ".$table_name."
+                           WHERE archive_identifier = '".esc_sql($ad_identifier)."'";
+                $results = $wpdb->get_results($query);
 
-            $existing_instances = array();
-            foreach($results as $result) {
-                $network = $result->network;
-                $start_time = $result->start_time;
-                if(!array_key_exists($network, $existing_instances)) {
-                    $existing_instances[$network] = array();
+                $existing_instances = array();
+                foreach($results as $result) {
+                    $network = $result->network;
+                    $start_time = $result->start_time;
+                    if(!array_key_exists($network, $existing_instances)) {
+                        $existing_instances[$network] = array();
+                    }
+                    $existing_instances[$network][] = "".strtotime($start_time);
                 }
-                $existing_instances[$network][] = "".strtotime($start_time);
-            }
 
-            // STEP 2: Get every instance, and create a record for each instance
-            // NOTE: it won't double insert when run more than once due to the unique key
-            $url = 'https://archive.org/details/tv?ad_instances='.$ad_identifier.'&output=json';
-            $url_result = file_get_contents($url);
-            $instances = json_decode($url_result);
+                // STEP 2: Get every instance, and create a record for each instance
+                // NOTE: it won't double insert when run more than once due to the unique key
+                $url = 'https://archive.org/details/tv?ad_instances='.$ad_identifier.'&output=json';
+                $url_result = file_get_contents($url);
+                $instances = json_decode($url_result);
 
-            // Load the overrides
-            $start_override = get_field('start_override', $wp_identifier);
-            $end_override = get_field('end_override', $wp_identifier);
+                // Load the overrides
+                $start_override = get_field('start_override', $wp_identifier);
+                $end_override = get_field('end_override', $wp_identifier);
 
-            // Iterate through each instance
-            foreach($instances as $instance) {
-                $network = $instance->chan;
-                $market = array_key_exists($network, $network_lookup)?$network_lookup[$network]['market']:'';
-                $location = array_key_exists($market, $market_translations)?$market_translations[$market]:'';
-                $start_time = date("Y-m-d H:i:s", $instance->start);
-                $end_time = date("Y-m-d H:i:s", $instance->end);
-                $date_created = date("Y-m-d H:i:s");
-                $program = $instance->title;
-                $program_type = $instance->program_type;
+                // Iterate through each instance
+                foreach($instances as $instance) {
+                    $network = $instance->chan;
+                    $market = array_key_exists($network, $network_lookup)?$network_lookup[$network]['market']:'';
+                    $location = array_key_exists($market, $market_translations)?$market_translations[$market]:'';
+                    $start_time = date("Y-m-d H:i:s", $instance->start);
+                    $end_time = date("Y-m-d H:i:s", $instance->end);
+                    $date_created = date("Y-m-d H:i:s");
+                    $program = $instance->title;
+                    $program_type = $instance->program_type;
 
-                // Does this instance already exist in our database?
-                if(array_key_exists($network, $existing_instances)
-                && array_search("".strtotime($start_time), $existing_instances[$network]) !== false)
-                    continue;
+                    // Does this instance already exist in our database?
+                    if(array_key_exists($network, $existing_instances)
+                    && array_search("".strtotime($start_time), $existing_instances[$network]) !== false)
+                        continue;
 
-                // If the start time isn't within the override range, skip this airing
-                if($start_override != null
-                && strtotime($start_override) > strtotime($start_time))
-                    continue;
+                    // If the start time isn't within the override range, skip this airing
+                    if($start_override != null
+                    && strtotime($start_override) > strtotime($start_time))
+                        continue;
 
-                if($end_override != null
-                && strtotime($end_override) < strtotime($start_time))
-                    continue;
+                    if($end_override != null
+                    && strtotime($end_override) < strtotime($start_time))
+                        continue;
 
-                $table_name = $wpdb->prefix . 'ad_instances';
-                $wpdb->insert(
-                    $table_name,
-                    array(
-                        'wp_identifier' => $wp_identifier,
-                        'archive_identifier' => $ad_identifier,
-                        'network' => $network,
-                        'market' => $market,
-                        'location' => $location,
-                        'start_time' => $start_time,
-                        'end_time' => $end_time,
-                        'program' => $program,
-                        'program_type' => $program_type,
-                        'date_created' => $date_created
-                    )
-                );
-            }
+                    $table_name = $wpdb->prefix . 'ad_instances';
+                    $wpdb->insert(
+                        $table_name,
+                        array(
+                            'wp_identifier' => $wp_identifier,
+                            'archive_identifier' => $ad_identifier,
+                            'network' => $network,
+                            'market' => $market,
+                            'location' => $location,
+                            'start_time' => $start_time,
+                            'end_time' => $end_time,
+                            'program' => $program,
+                            'program_type' => $program_type,
+                            'date_created' => $date_created
+                        )
+                    );
+                }
 
-            // Remove any overrode airings that we may have saved in the past
-            if($start_override != null) {
-                $table_name = $wpdb->prefix . 'ad_instances';
-                $query = $wpdb->prepare('DELETE FROM %1$s WHERE UNIX_TIMESTAMP(start_time) < %2$d && wp_identifier = %3$d', array($table_name, strtotime($start_override), $wp_identifier));
-                $wpdb->query($query);
-            }
+                // Remove any overrode airings that we may have saved in the past
+                if($start_override != null) {
+                    $table_name = $wpdb->prefix . 'ad_instances';
+                    $query = $wpdb->prepare('DELETE FROM %1$s WHERE UNIX_TIMESTAMP(start_time) < %2$d && wp_identifier = %3$d', array($table_name, strtotime($start_override), $wp_identifier));
+                    $wpdb->query($query);
+                }
 
-            if($end_override != null) {
-                $table_name = $wpdb->prefix . 'ad_instances';
-                $query = $wpdb->prepare('DELETE FROM %1$s WHERE UNIX_TIMESTAMP(start_time) > %2$d && wp_identifier = %3$d', array($table_name, strtotime($end_override), $wp_identifier));
-                $wpdb->query($query);
+                if($end_override != null) {
+                    $table_name = $wpdb->prefix . 'ad_instances';
+                    $query = $wpdb->prepare('DELETE FROM %1$s WHERE UNIX_TIMESTAMP(start_time) > %2$d && wp_identifier = %3$d', array($table_name, strtotime($end_override), $wp_identifier));
+                    $wpdb->query($query);
+                }
+            } catch( Exception $e ) {
+                error_log($e);
             }
         }
 
@@ -349,8 +354,10 @@ class PoliticalAdArchiveAdmin {
         $sponsors_table = $wpdb->prefix . 'ad_sponsors';
         $instances_table = $wpdb->prefix . 'ad_instances';
         $postmeta_table = $wpdb->prefix . 'postmeta';
+        $post_table = $wpdb->prefix . 'posts';
 
         // Update ad air counts
+        error_log ("Updating Ad Air Counts");
         $query = "SELECT count(*) as air_count,
                          count(DISTINCT network) as network_count,
                          count(DISTINCT market) as market_count,
@@ -371,12 +378,15 @@ class PoliticalAdArchiveAdmin {
         }
 
         // Update candidate air counts
+        error_log ("Updating Candidate Counts");
         $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
                          count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
                          meta_value as ad_candidate
                     FROM ".$postmeta_table."
-                    JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
-                   WHERE meta_key LIKE 'ad_candidates_%_ad_candidate'
+                    JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
+               LEFT JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
+                   WHERE ".$post_table.".post_status = 'publish'
+                     AND meta_key LIKE 'ad_candidates_%_ad_candidate'
                 GROUP BY ".$postmeta_table.".meta_value";
 
         $results = $wpdb->get_results($query);
@@ -387,12 +397,15 @@ class PoliticalAdArchiveAdmin {
         }
 
         // Update sponsor air counts
+        error_log ("Updating Sponsor Counts");
         $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
                          count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
                          meta_value as ad_sponsor
                     FROM ".$postmeta_table."
-                    JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
-                   WHERE meta_key LIKE 'ad_sponsors_%_ad_sponsor'
+                    JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
+               LEFT JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
+                   WHERE ".$post_table.".post_status = 'publish'
+                     AND meta_key LIKE 'ad_sponsors_%_ad_sponsor'
                 GROUP BY ".$postmeta_table.".meta_value";
 
         $results = $wpdb->get_results($query);
@@ -401,6 +414,7 @@ class PoliticalAdArchiveAdmin {
             $query = "UPDATE ".$sponsors_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_sponsor)."'";
             $wpdb->query($query);
         }
+        error_log ("Finished Updating Counts");
 
     }
 
@@ -470,14 +484,18 @@ class PoliticalAdArchiveAdmin {
                 'affiliation' => $affiliation,
                 'date_created' => $date_created
             );
+            $where = array(
+                'crp_unique_id' => $crp_unique_id
+            );
 
             if(array_key_exists($crp_unique_id, $existing_candidates))
                 $values['id'] =$existing_candidates[$crp_unique_id];
 
             $table_name = $wpdb->prefix . 'ad_candidates';
-            $wpdb->replace(
+            $wpdb->update(
                 $table_name,
-                $values
+                $values,
+                $where
             );
         }
     }
@@ -559,13 +577,17 @@ class PoliticalAdArchiveAdmin {
                 'does_support_candidate' => $does_support_candidate,
                 'date_created' => $date_created
             );
+            $where = array(
+                'crp_unique_id' => $crp_unique_id
+            );
 
             if(array_key_exists($crp_unique_id, $existing_sponsors))
                 $values['id'] =$existing_sponsors[$crp_unique_id];
 
-            $wpdb->replace(
+            $wpdb->update(
                 $table_name,
-                $values
+                $values,
+                $where
             );
         }
     }
@@ -630,10 +652,10 @@ class PoliticalAdArchiveAdmin {
             "RDU" => "Raleigh-Durham-Fayetteville,  NC",
             "RNO" => "Reno, NV",
             "ROA" => "Roanoke-Lynchburg, VA",
-            "SF" => "San Francisco-Oakland-San Jose, CA",
+            "SF" =>  "San Francisco-Oakland-San Jose, CA",
             "SUX" => "Sioux City, Iowa",
             "TPA" => "Tampa-St. Petersburg, FL",
-            "VA" => "Washington, DC/Hagerstown, MD"
+            "VA" =>  "Washington, DC/Hagerstown, MD"
         );
     }
 

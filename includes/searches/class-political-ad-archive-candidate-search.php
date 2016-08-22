@@ -32,27 +32,28 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
 
 	public function get_chunk($page) {
 
-        global $wpdb;
-
-        // Collect the counts of ads per market
-        $table_name = $wpdb->prefix.'ad_candidates';
-        $query = "SELECT *
-                  FROM ".$table_name."
-                  JOIN (SELECT DISTINCT wp_postmeta.meta_value as meta_value FROM wp_postmeta
-                    JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID
-                    WHERE wp_postmeta.meta_key LIKE 'ad_candidates_%ad_candidate'
-                    AND wp_posts.post_status = 'publish')
-                  as t ON ".$table_name.".name = t.meta_value
-                  GROUP BY name
-                  ORDER BY ad_count DESC";
-        $results = $wpdb->get_results($query);
-	    $rows = array();
-	    foreach($results as $candidate_result) {
-	    	$rows[] = $this->generate_row($candidate_result);
-	    }
-      if ($page < 1){
-        return $rows;
-      }
+    global $wpdb;
+    $postmeta_table = $wpdb->prefix . 'postmeta';
+    $post_table = $wpdb->prefix . 'posts';
+    $candidates_table = $wpdb->prefix.'ad_candidates';
+    
+    // Collect the counts of ads per market
+    $query = "SELECT ".$candidates_table.".*
+                FROM ".$candidates_table."
+                JOIN ".$postmeta_table." ON ".$postmeta_table.".meta_value = ".$candidates_table.".name
+                JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
+               WHERE ".$postmeta_table.".meta_key LIKE 'ad_candidates_%ad_candidate'
+                 AND ".$post_table.".post_status = 'publish'
+            GROUP BY name
+            ORDER BY ad_count DESC";
+    $results = $wpdb->get_results($query);
+    $rows = array();
+    foreach($results as $candidate_result) {
+    	$rows[] = $this->generate_row($candidate_result);
+    }
+    if ($page < 1){
+      return $rows;
+    }
 
 	}
 
