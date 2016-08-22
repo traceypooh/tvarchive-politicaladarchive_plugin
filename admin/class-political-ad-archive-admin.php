@@ -370,11 +370,13 @@ class PoliticalAdArchiveAdmin {
         $results = $wpdb->get_results($query);
         $air_metadata = array();
         foreach($results as $result) {
+            $wp_identifier = $result->wp_identifier;
             update_field('field_566e3659fb227', $result->air_count, $wp_identifier); // air_count
             update_field('field_566e367e962e2', $result->market_count, $wp_identifier); // market_count
             update_field('field_566e3697962e3', $result->network_count, $wp_identifier); // network_count
             update_field('field_566e36b0962e4', $result->first_seen, $wp_identifier); // first_seen
             update_field('field_566e36d5962e5', $result->last_seen,  $wp_identifier); // last_seen
+            error_log("Updating ID ".$wp_identifier.": ".print_r($result, true));
         }
 
         // Update candidate air counts

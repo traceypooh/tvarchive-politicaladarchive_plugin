@@ -32,6 +32,9 @@ class PoliticalAdArchiveApiGetAds {
 	    		$search->posts_per_page = $_GET['per_page'];
 	    	if(array_key_exists('page', $_GET))
 	    		$search->pages = array($_GET['page']);
+	    	if(array_key_exists('sort', $_GET)) {
+	    		$search->sort = $_GET['sort'];
+	    	}
 
 	    	// Add in filters
 	    	$search->word_filters = array_key_exists('word_filter',$_GET)?$_GET['word_filter']:array();

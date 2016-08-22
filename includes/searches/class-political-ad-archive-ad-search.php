@@ -12,6 +12,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
 	private $posts_per_page;
 	private $pages = array();
+	private $sort = 'air_date';
 
 	// Make it possible to specify filters for the search
 	// These are all arrays of tuples:
@@ -44,7 +45,13 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
 	public function __set($property, $value) {
 		if (property_exists($this, $property)) {
-			$this->$property = $this->parse_filter($value);
+			// Filters get specially formatted
+			if(strpos($property, 'filters') !== false) {
+				$this->$property = $this->parse_filter($value);
+			}
+			else {
+				$this->$property = $value;
+			}
 		}
 
 		return $this;
@@ -98,6 +105,11 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
             'paged' => $page + 1,
             'post__in' => (sizeof($filtered_ids) > 0)?$filtered_ids:array(-1)
 	    );
+
+	    if($this->sort == "air_count") {
+	    	$args['orderby'] = "meta_value_num";
+	    	$args['meta_key'] = "air_count";
+	    }
 
 	    $wp_query = new WP_Query($args);
 	    $ads = $wp_query->posts;
@@ -231,7 +243,9 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
         $query = "SELECT ID
                     FROM ".$posts_table."
-                   WHERE ((".$or_clause.") AND (".$and_clause."))";
+                   WHERE ((".$or_clause.")
+                     AND (".$and_clause."))
+                     AND ".$posts_table.".post_status = 'publish'";
 
         $results = $wpdb->get_results($query);
 	    $filtered_ids = array();
