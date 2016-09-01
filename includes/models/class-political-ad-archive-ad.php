@@ -30,6 +30,14 @@ class PoliticalAdArchiveAd {
 	private $transcript;
 	private $date_ingested;
 
+    // Air count filters (optional)
+    private $market_filters = array();
+    private $channel_filters = array();
+    private $program_filters = array();
+    private $start_time;
+    private $end_time;
+
+
 	public function PoliticalAdArchiveAd($wp_id) {
                 $post_metadata = get_fields($wp_id);
                 $post_date = 

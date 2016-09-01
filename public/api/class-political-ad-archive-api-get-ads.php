@@ -48,6 +48,12 @@ class PoliticalAdArchiveApiGetAds {
 			$search->program_filters = array_key_exists('program_filter',$_GET)?$_GET['program_filter']:array();
 			$search->transcript_filters = array_key_exists('transcript_filter',$_GET)?$_GET['transcript_filter']:array();
 
+			// Add in air time constraints
+	    	if(array_key_exists("start_time", $_GET))
+	    		$search->start_time = $_GET['start_time'];
+	    	if(array_key_exists("end_time", $_GET))
+	    		$search->end_time = $_GET['end_time'];
+
 			if(array_key_exists('output', $_GET)
 			&& $_GET['output']=="csv") {
 				$output = PoliticalAdArchiveApiResponse::FORMAT_CSV;

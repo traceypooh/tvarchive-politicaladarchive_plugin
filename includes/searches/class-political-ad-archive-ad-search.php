@@ -29,6 +29,8 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	private $program_filters = array();
 	private $transcript_filters = array();
 	private $archive_id_filters = array();
+    private $start_time;
+    private $end_time;
 
 	// filter cache stores the results of the filter (a list of post IDs)
 	private $_filter_cache = array();
@@ -96,30 +98,76 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 			$page = $this->pages[$page];
 		}
 
-	    $args = array(
-	        'post_type'      => 'archive_political_ad',
-	        'post_status'    => 'publish',
-	        'orderby'        => 'post_date',
-	        'order'          => 'DESC',
-            'posts_per_page' => $this->posts_per_page,
-            'paged' => $page + 1,
-            'post__in' => (sizeof($filtered_ids) > 0)?$filtered_ids:array(-1)
-	    );
+		global $wpdb;
+        $instances_table = $wpdb->prefix . 'ad_instances';
+        $posts_table = $wpdb->prefix . 'posts';
+		$query = "SELECT ".$posts_table.".ID as post_id,
+		           		 count(".$instances_table.".id) as air_count
+		           	FROM ".$posts_table."
+		       LEFT JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
+		           WHERE ".$posts_table.".post_status = 'publish'
+		             AND ".$posts_table.".ID IN (".implode(((sizeof($filtered_ids) > 0)?$filtered_ids:array(-1)), ",").")";
 
-	    if($this->sort == "air_count") {
-	    	$args['orderby'] = "meta_value_num";
-	    	$args['meta_key'] = "air_count";
-	    }
+        // Instance filters
+        $query_parts = array();
+        if(sizeof($this->market_filters) > 0)
+            $query_parts[] = $this->generate_instance_filter_query_part($this->market_filters, "market");
+        if(sizeof($this->channel_filters) > 0)
+            $query_parts[] = $this->generate_instance_filter_query_part($this->channel_filters, "channel");
+        if(sizeof($this->program_filters) > 0)
+            $query_parts[] = $this->generate_instance_filter_query_part($this->program_filters, "program");
+        if(sizeof($query_parts) > 0)
+            $query .= " AND ".implode($query_parts, " AND ");
 
-	    $wp_query = new WP_Query($args);
-	    $ads = $wp_query->posts;
+        $query .= " GROUP BY ".$posts_table.".ID ";
 
+        if($this->sort == "air_count")
+        	$query .= " ORDER BY air_count DESC ";
+        else
+        	$query .= " ORDER BY ".$posts_table.".post_date DESC ";
+
+		$query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
+        
+        $results = $wpdb->get_results($query);
 	    $rows = array();
-	    foreach($ads as $ad) {
-	    	$rows[] = $this->generate_row($ad);
+	    foreach($results as $result) {
+	    	$ad_id = $result->post_id;
+	    	$air_count = $result->air_count;
+	    	$rows[] = $this->generate_row($ad_id, $air_count);
 	    }
 	    return $rows;
 	}
+
+    private function generate_instance_filter_query_part($filters, $field) {
+		global $wpdb;
+        $instances_table = $wpdb->prefix . 'ad_instances';
+        $subquery = "";
+        $and_parts = array();
+        $or_parts = array();
+        foreach($filters as $filter) {
+            switch($filter['boolean']) {
+                case 'not':
+                    $and_parts[] = $instances_table.".".$field." != '".esc_sql($filter['term'])."'";
+                    break;
+                case 'and':
+                    $and_parts[] = $instances_table.".".$field." = '".esc_sql($filter['term'])."'";
+                    break;
+                case 'or':
+                    $or_parts[] = $instances_table.".".$field." = '".esc_sql($filter['term'])."'";
+                    break;
+            }
+        }
+
+        $subquery .= "(";
+        if(sizeof($and_parts) > 0)
+            $subquery .= "(".implode($and_parts, " AND ").")";
+        else
+            $subquery .= "false";
+        if(sizeof($or_parts) > 0)
+            $subquery .= " OR (".implode($or_parts, " OR ").")";
+        $subquery .= ")";
+        return $subquery;
+    }
 
 	private function run_meta_filter($filters, $meta_key, $exact_match=false) {
 		global $wpdb;
@@ -152,7 +200,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
         $or_clause = sizeof($or_parts)>0?implode(") OR (", $or_parts):"true";
         $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
-        $query = "SELECT ID
+        $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.") AND (".$and_clause."))";
 
@@ -198,7 +246,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
         $or_clause = sizeof($or_parts)>0?implode(") OR (", $or_parts):"true";
         $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
-        $query = "SELECT ID
+        $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.") AND (".$and_clause."))";
 
@@ -241,12 +289,38 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
         $or_clause = sizeof($or_parts)>0?implode(") OR (", $or_parts):"true";
         $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
-        $query = "SELECT ID
+        $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.")
                      AND (".$and_clause."))
                      AND ".$posts_table.".post_status = 'publish'";
 
+        $results = $wpdb->get_results($query);
+	    $filtered_ids = array();
+
+	    foreach($results as $row) {
+            $filtered_ids[] = $row->ID;
+	    }
+	    return $filtered_ids;
+	}
+
+	public function run_date_range_filter($start_time, $end_time) {
+		global $wpdb;
+
+		// Make sure the times are populated
+		if(!$end_time)
+			$end_time = date('Y-m-d H:i:s');
+		if(!$start_time)
+			$start_time = 0;
+
+        $instances_table = $wpdb->prefix . 'ad_instances';
+        $posts_table = $wpdb->prefix . 'posts';
+        $query = "SELECT DISTINCT ".$posts_table.".ID
+                    FROM ".$posts_table."
+                    JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
+                   WHERE end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($start_time)))."'
+                     AND start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($end_time)))."'
+                     AND ".$posts_table.".post_status = 'publish'";
         $results = $wpdb->get_results($query);
 	    $filtered_ids = array();
 
@@ -397,12 +471,20 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
+		if($this->start_time || $this->end_time) {
+			$filtered_ids = $this->run_date_range_filter(
+				$this->start_time,
+				$this->end_time
+			);
+		    $ids = array_intersect($ids, $filtered_ids);
+		}
+
 	    $this->_filter_cache = $ids;
 	    return $ids;
 	}
 
-	private function generate_row($row) {
-        $ad = new PoliticalAdArchiveAd($row->ID);
+	private function generate_row($ad_id, $air_count) {
+        $ad = new PoliticalAdArchiveAd($ad_id);
         $parsed_row = [
             "wp_identifier" => $ad->wp_id,
             "archive_id" => $ad->archive_id,
@@ -417,7 +499,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
             "race" => $ad->race,
             "cycle" => $ad->cycle,
             "message" => $ad->message,
-            "air_count" => $ad->air_count,
+            "air_count" => $air_count,
             "reference_count" => $ad->references,
             "market_count" => $ad->market_count,
             "transcript" => $ad->transcript,
