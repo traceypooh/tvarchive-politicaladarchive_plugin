@@ -113,7 +113,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         if(sizeof($this->market_filters) > 0)
             $query_parts[] = $this->generate_instance_filter_query_part($this->market_filters, "market");
         if(sizeof($this->channel_filters) > 0)
-            $query_parts[] = $this->generate_instance_filter_query_part($this->channel_filters, "channel");
+            $query_parts[] = $this->generate_instance_filter_query_part($this->channel_filters, "network");
         if(sizeof($this->program_filters) > 0)
             $query_parts[] = $this->generate_instance_filter_query_part($this->program_filters, "program");
 		if($this->start_time)
