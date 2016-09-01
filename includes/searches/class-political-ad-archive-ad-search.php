@@ -116,6 +116,11 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
             $query_parts[] = $this->generate_instance_filter_query_part($this->channel_filters, "channel");
         if(sizeof($this->program_filters) > 0)
             $query_parts[] = $this->generate_instance_filter_query_part($this->program_filters, "program");
+		if($this->start_time)
+			$query_parts[] = $instances_table.".end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($this->start_time)))."'";
+		if($this->end_time)
+			$query_parts[] = $instances_table.".start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
+
         if(sizeof($query_parts) > 0)
             $query .= " AND ".implode($query_parts, " AND ");
 
@@ -127,7 +132,6 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         	$query .= " ORDER BY ".$posts_table.".post_date DESC ";
 
 		$query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
-        
         $results = $wpdb->get_results($query);
 	    $rows = array();
 	    foreach($results as $result) {
