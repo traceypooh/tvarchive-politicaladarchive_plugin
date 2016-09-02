@@ -582,11 +582,11 @@ class PoliticalAdArchiveAdmin {
                 'date_created' => $date_created
             );
             $where = array(
-                'crp_unique_id' => $crp_unique_id
+                'name' => $name
             );
 
-            if(array_key_exists($crp_unique_id, $existing_sponsors))
-                $values['id'] =$existing_sponsors[$crp_unique_id];
+            // if(array_key_exists($crp_unique_id, $existing_sponsors))
+            //     $values['id'] = $existing_sponsors[$crp_unique_id];
 
             $wpdb->update(
                 $table_name,
