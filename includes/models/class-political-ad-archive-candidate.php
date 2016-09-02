@@ -19,6 +19,7 @@ class PoliticalAdArchiveCandidate {
 	private $ad_count; // Number of unique ads
 	private $air_count; // Number of unique airings	
 	private $date_created; // The date this record was created in this system
+	private $in_crp; // Is this item in the CRP database or not
 
 	public function PoliticalAdArchiveCandidate() {}
 
@@ -74,6 +75,7 @@ class PoliticalAdArchiveCandidate {
         	$candidate->ad_count = $result->ad_count;
         	$candidate->air_count = $result->air_count;
         	$candidate->date_created = $result->date_created;
+        	$candidate->in_crp = true;
         	$candidates[] = $candidate;
         }
 
@@ -92,7 +94,25 @@ class PoliticalAdArchiveCandidate {
 
         $result = $wpdb->get_row($query);
 
-        return $result;
+        if($result) {
+	    	$candidate = new PoliticalAdArchiveCandidate();
+	    	$candidate->id = $result->id;
+	    	$candidate->crp_unique_id = $result->crp_unique_id;
+	    	$candidate->name = $result->name;
+	    	$candidate->race = $result->race;
+	    	$candidate->cycle = $result->cycle;
+	    	$candidate->affiliation = $result->affiliation;
+	    	$candidate->ad_count = $result->ad_count;
+	    	$candidate->air_count = $result->air_count;
+	    	$candidate->date_created = $result->date_created;
+	    	$candidate->in_crp = true;
+	    	return $candidate;
+	    } else {
+        	$candidate = new PoliticalAdArchiveCandidate();
+        	$candidate->name = $name;
+	    	$candidate->in_crp = false;
+        	return $candidate;
+	    }
 	}
 
 	public static function get_candidates_by_names($names) {
@@ -111,8 +131,36 @@ class PoliticalAdArchiveCandidate {
         $query = "SELECT *
                     FROM ".$table_name."
                     WHERE name IN (".implode(", ", $sanitized_names).")";
-        $result = $wpdb->get_results($query);
-        return $result;
+        $results = $wpdb->get_results($query);
+
+        $leftover_candidates = $names;
+        foreach($results as $result) {
+        	$candidate = new PoliticalAdArchiveCandidate();
+        	$candidate->id = $result->id;
+        	$candidate->crp_unique_id = $result->crp_unique_id;
+        	$candidate->name = $result->name;
+        	$candidate->race = $result->race;
+        	$candidate->cycle = $result->cycle;
+        	$candidate->affiliation = $result->affiliation;
+        	$candidate->ad_count = $result->ad_count;
+        	$candidate->air_count = $result->air_count;
+        	$candidate->date_created = $result->date_created;
+	    	$candidate->in_crp = true;
+        	$candidates[] = $candidate;
+
+	    	// Flag the name as found
+	    	$leftover_candidates = array_diff($leftover_candidates, array($result->name));
+        }
+
+        // Create basic objects for names that aren't found
+        foreach($leftover_candidates as $leftover_candidate) {
+	    	$candidate = new PoliticalAdArchiveSponsor();
+	    	$candidate->name = $leftover_candidate;
+	    	$candidate->affiliation = "?";
+	    	$candidate->in_crp = false;
+	    	$candidates[] = $candidate;
+        }
+        return $candidates;
 	}
 
 	public static function get_candidates_by_acf_field_value($candidates_field) {

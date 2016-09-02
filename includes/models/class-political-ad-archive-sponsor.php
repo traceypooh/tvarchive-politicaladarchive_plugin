@@ -21,6 +21,7 @@ class PoliticalAdArchiveSponsor {
 	private $ad_count; // Number of unique ads
 	private $air_count; // Number of unique airings
 	private $date_created; // The date this record was created in this system
+	private $in_crp; // Is this item in the CRP database or not
 
 	public function PoliticalAdArchiveSponsor() {}
 
@@ -70,6 +71,7 @@ class PoliticalAdArchiveSponsor {
         	$sponsor->ad_count = $result->ad_count;
         	$sponsor->air_count = $result->air_count;
         	$sponsor->date_created = $result->date_created;
+        	$sponsor->in_crp = true;
         	$sponsors[] = $sponsor;
         }
 
@@ -87,18 +89,27 @@ class PoliticalAdArchiveSponsor {
                 LIMIT 0,1";
 
         $result = $wpdb->get_row($query);
-    	$sponsor = new PoliticalAdArchiveSponsor();
-    	$sponsor->id = $result->id;
-    	$sponsor->crp_unique_id = $result->crp_unique_id;
-    	$sponsor->name = $result->name;
-    	$sponsor->race = $result->race;
-    	$sponsor->cycle = $result->cycle;
-    	$sponsor->type = $result->type;
-    	$sponsor->single_ad_candidate_id = $result->single_ad_candidate_id;
-    	$sponsor->does_support_candidate = $result->does_support_candidate;
-    	$sponsor->ad_count = $result->ad_count;
-    	$sponsor->air_count = $result->air_count;
-    	$sponsor->date_created = $result->date_created;
+
+        if($result) {
+	    	$sponsor = new PoliticalAdArchiveSponsor();
+	    	$sponsor->id = $result->id;
+	    	$sponsor->crp_unique_id = $result->crp_unique_id;
+	    	$sponsor->name = $result->name;
+	    	$sponsor->race = $result->race;
+	    	$sponsor->cycle = $result->cycle;
+	    	$sponsor->type = $result->type;
+	    	$sponsor->single_ad_candidate_id = $result->single_ad_candidate_id;
+	    	$sponsor->does_support_candidate = $result->does_support_candidate;
+	    	$sponsor->ad_count = $result->ad_count;
+	    	$sponsor->air_count = $result->air_count;
+	    	$sponsor->date_created = $result->date_created;
+	    	$sponsor->in_crp = true;
+	    } else {
+	    	$sponsor = new PoliticalAdArchiveSponsor();
+	    	$sponsor->name = $name;
+	    	$sponsor->type = "Unknown";
+	    	$sponsor->in_crp = false;
+	    }
         return $sponsor;
 	}
 
@@ -119,8 +130,38 @@ class PoliticalAdArchiveSponsor {
                     FROM ".$table_name."
                     WHERE name IN (".implode(",",$sanitized_names).")";
 
-        $result = $wpdb->get_results($query);
-        return $result;
+        $results = $wpdb->get_results($query);
+        $sponsors = array();
+        $leftover_sponsors = $names;
+        foreach($results as $result) {
+	    	$sponsor = new PoliticalAdArchiveSponsor();
+	    	$sponsor->id = $result->id;
+	    	$sponsor->crp_unique_id = $result->crp_unique_id;
+	    	$sponsor->name = $result->name;
+	    	$sponsor->race = $result->race;
+	    	$sponsor->cycle = $result->cycle;
+	    	$sponsor->type = $result->type;
+	    	$sponsor->single_ad_candidate_id = $result->single_ad_candidate_id;
+	    	$sponsor->does_support_candidate = $result->does_support_candidate;
+	    	$sponsor->ad_count = $result->ad_count;
+	    	$sponsor->air_count = $result->air_count;
+	    	$sponsor->date_created = $result->date_created;
+	    	$sponsor->in_crp = true;
+	    	$sponsors[] = $sponsor;
+
+	    	// Flag the name as found
+	    	$leftover_sponsors = array_diff($leftover_sponsors, array($result->name));
+        }
+
+        // Create basic objects for names that aren't found
+        foreach($leftover_sponsors as $leftover_sponsor) {
+	    	$sponsor = new PoliticalAdArchiveSponsor();
+	    	$sponsor->name = $leftover_sponsor;
+	    	$sponsor->type = "Unknown";
+	    	$sponsor->in_crp = false;
+	    	$sponsors[] = $sponsor;
+        }
+        return $sponsors;
 	}
 
 	/**

@@ -57,6 +57,7 @@ class PoliticalAdArchiveAd {
                 $ad_candidates_acf_value = array_key_exists('ad_candidates', $post_metadata)?$post_metadata['ad_candidates']:array();
                 $ad_candidates_acf_value = $ad_candidates_acf_value?$ad_candidates_acf_value:array();
                 $this->candidates = PoliticalAdArchiveCandidate::get_candidates_by_acf_field_value($ad_candidates_acf_value);
+                print_r($this->candidates);
                 $this->candidate_names = array_map(function($x) { return $x->name; }, $this->candidates);
                 $ad_subjects_acf_value = array_key_exists('ad_subjects', $post_metadata)?$post_metadata['ad_subjects']:array();
                 $ad_subjects_acf_value = $ad_subjects_acf_value?$ad_subjects_acf_value:array();
@@ -126,6 +127,8 @@ class PoliticalAdArchiveAd {
                 return "Hybrid Super PAC";
             case "527":
                 return "527";
+            default:
+                return $sponsor_type;
         }
     }
 }

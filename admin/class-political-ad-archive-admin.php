@@ -66,9 +66,10 @@ class PoliticalAdArchiveAdmin {
         foreach($sponsors as $sponsor) {
             $sponsor_name = $sponsor["ad_sponsor"];
             $sponsor_object = PoliticalAdArchiveSponsor::get_sponsor_by_name($sponsor_name);
-            if(!$sponsor_object) {
+            if(!$sponsor_object ||
+                $sponsor_object->in_crp == false) {
                 $class = 'notice notice-error';
-                $message = __( 'WARNING: A sponsor does not have metadata in the sponsors table ('. $sponsor_name.')', 'political-ad-archive' );
+                $message = __( 'WARNING: A sponsor does not have metadata in the sponsors table: '. $sponsor_name, 'political-ad-archive' );
                 printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
             }
         }
@@ -79,9 +80,10 @@ class PoliticalAdArchiveAdmin {
         foreach($candidates as $candidate) {
             $candidate_name = $candidate["ad_candidate"];
             $candidate_object = PoliticalAdArchiveCandidate::get_candidate_by_name($candidate_name);
-            if(!$candidate_object) {
+            if(!$candidate_object||
+                $candidate_object->in_crp == false) {
                 $class = 'notice notice-error';
-                $message = __( 'WARNING: A candidate does not have metadata in the candidates table ('. $candidate_name.')', 'political-ad-archive' );
+                $message = __( 'WARNING: A candidate does not have metadata in the candidates table: '. $candidate_name, 'political-ad-archive' );
                 printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
             }
         }
