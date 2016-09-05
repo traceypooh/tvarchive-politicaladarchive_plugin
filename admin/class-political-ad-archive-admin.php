@@ -472,6 +472,8 @@ class PoliticalAdArchiveAdmin {
             if($sponsor->uniqueid == "")
                 continue;
 
+            error_log("Loading Candidate: ".$sponsor->sponsorname." (".$sponsor->uniqueid.")");
+
             $id = 0;
             $name = substr($sponsor->sponsorname, 0, -4);
             $affiliation = substr($sponsor->sponsorname, -2, 1);
@@ -492,15 +494,21 @@ class PoliticalAdArchiveAdmin {
                 'crp_unique_id' => $crp_unique_id
             );
 
-            if(array_key_exists($crp_unique_id, $existing_candidates))
-                $values['id'] =$existing_candidates[$crp_unique_id];
-
             $table_name = $wpdb->prefix . 'ad_candidates';
-            $wpdb->update(
-                $table_name,
-                $values,
-                $where
-            );
+            if(array_key_exists($crp_unique_id, $existing_candidates)) {
+                $values['id'] =$existing_candidates[$crp_unique_id];
+                $wpdb->update(
+                    $table_name,
+                    $values,
+                    $where
+                );
+            } else {
+                $wpdb->insert(
+                    $table_name,
+                    $values
+                );
+            }
+
         }
     }
 
@@ -540,7 +548,6 @@ class PoliticalAdArchiveAdmin {
 
         // Process the result
         $sponsors = array();
-
         // Save the records
         foreach($result->response->record as $sponsor) {
             $sponsor = $sponsor->{'@attributes'};
@@ -553,10 +560,12 @@ class PoliticalAdArchiveAdmin {
             if($sponsor->uniqueid == "")
                 continue;
 
+            error_log("Loading Sponsor: ".$sponsor->sponsorname." (".$sponsor->uniqueid.")");
+
             $name = $sponsor->sponsorname;
             $race = $sponsor->race;
             $cycle = $sponsor->cycle;
-            $crp_unique_id = $sponsor->uniqueid;
+            $crp_unique_id = $sponsor->uniqueid.$name; // TODO: remove name from unique ID
             $type = $sponsor->type;
             if($sponsor->c4 != "")
                 $type .= "4";
@@ -582,17 +591,25 @@ class PoliticalAdArchiveAdmin {
                 'date_created' => $date_created
             );
             $where = array(
-                'name' => $name
+                'crp_unique_id' => $crp_unique_id
             );
 
-            // if(array_key_exists($crp_unique_id, $existing_sponsors))
-            //     $values['id'] = $existing_sponsors[$crp_unique_id];
 
-            $wpdb->update(
-                $table_name,
-                $values,
-                $where
-            );
+            $table_name = $wpdb->prefix . 'ad_sponsors';
+            if(array_key_exists($crp_unique_id, $existing_sponsors)) {
+                $values['id'] = $existing_sponsors[$crp_unique_id];
+                $wpdb->update(
+                    $table_name,
+                    $values,
+                    $where
+                );
+            } else {
+                $wpdb->insert(
+                    $table_name,
+                    $values
+                );                
+            }
+
         }
     }
 
