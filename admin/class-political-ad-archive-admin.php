@@ -200,12 +200,24 @@ class PoliticalAdArchiveAdmin {
                 }
                 update_field('field_566e32bd943a4', $sponsors, $wp_identifier);
 
+                // We're going to look up race / cycle from the candidate
+                $race = "";
+                $cycle = "";
 
                 // Store the candidates
                 $candidates = array();
                 if(property_exists($metadata, 'candidate')
                 && is_array($metadata->candidate)) {
                     foreach($metadata->candidate as $candidate) {
+
+                        // Look up the race / cycle information
+                        if($race == "") {
+                            $candidate_object = PoliticalAdArchiveCandidate::get_candidate_by_name($candidate);
+                            $race = $candidate_object->race;
+                            $cycle = $candidate_object->cycle;
+                        }
+
+                        // Store the new candidate
                         $new_candidate = array(
                             'field_566e3573943a8' => $candidate // Name
                         );
@@ -213,6 +225,10 @@ class PoliticalAdArchiveAdmin {
                     }
                 }
                 update_field('field_566e3533943a7', $candidates, $wp_identifier);
+
+                // Store the race / cycle
+                update_field('field_56e62a2927944', $cycle, $wp_identifier);
+                update_field('field_56e62a2127943', $race, $wp_identifier);
 
                 // Store the subjects
                 $subjects = array();
