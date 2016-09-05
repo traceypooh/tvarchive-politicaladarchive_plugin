@@ -51,6 +51,7 @@ class PoliticalAdArchiveAd {
                 $this->sponsor_names = array_map(function($x) { return $x->name; }, $this->sponsors);
                 $this->sponsor_names = array_unique($this->sponsor_names);
                 $this->sponsor_types = array_map(function($x) { return PoliticalAdArchiveAd::get_friendly_sponsor_type_name($x->type); }, $this->sponsors);
+                $this->sponsor_types = array_unique($this->sponsor_types);
                 $this->sponsor_types = sizeof($this->sponsor_types) > 1?array("Multiple"):$this->sponsor_types;
                 $this->sponsor_affiliations = array_map(function($x) { return $x->single_ad_candidate_id; }, $this->sponsors);
                 $this->sponsor_affiliation_types = array_map(function($x) { return $x->does_support_candidate; }, $this->sponsors);
