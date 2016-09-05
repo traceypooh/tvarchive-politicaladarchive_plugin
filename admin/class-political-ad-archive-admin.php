@@ -556,6 +556,11 @@ class PoliticalAdArchiveAdmin {
             if($sponsor->type == "cand")
                 continue;
 
+            // Skip sponsors with a blank type
+            // This is a bug on CRPs end
+            if($sponsor->type == "")
+                continue;
+
             // Make sure the record is valid
             if($sponsor->uniqueid == "")
                 continue;
