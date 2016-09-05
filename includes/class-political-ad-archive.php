@@ -117,6 +117,7 @@ class PoliticalAdArchive {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-channel.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-program.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-ad-type.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-sponsor-type.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/class-political-ad-archive-subject.php';
 
         /**
