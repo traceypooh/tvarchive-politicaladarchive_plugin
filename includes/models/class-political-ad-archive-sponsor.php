@@ -150,7 +150,7 @@ class PoliticalAdArchiveSponsor {
 	    	$sponsors[] = $sponsor;
 
 	    	// Flag the name as found
-	    	$leftover_sponsors = array_diff($leftover_sponsors, array($result->name));
+	    	$leftover_sponsors = array_udiff($leftover_sponsors, array($result->name), 'strcasecmp');
         }
 
         // Create basic objects for names that aren't found

@@ -149,7 +149,7 @@ class PoliticalAdArchiveCandidate {
         	$candidates[] = $candidate;
 
 	    	// Flag the name as found
-	    	$leftover_candidates = array_diff($leftover_candidates, array($result->name));
+	    	$leftover_candidates = array_udiff($leftover_candidates, array($result->name), 'strcasecmp');
         }
 
         // Create basic objects for names that aren't found
