@@ -63,16 +63,8 @@ class PoliticalAdArchiveAd {
                 $ad_subjects_acf_value = $ad_subjects_acf_value?$ad_subjects_acf_value:array();
                 $this->subjects = array_map(function($x) { return $x['ad_subject']; }, $ad_subjects_acf_value);
                 $this->type = array_key_exists('ad_type', $post_metadata)?$post_metadata['ad_type']:'';
-                $races = array_merge(
-                        array_map(function($x) { return $x->race; }, $this->sponsors),
-                        array_map(function($x) { return $x->race; }, $this->candidates)
-                );
-                $this->race = array_pop($races);
-                $cycles = array_merge(
-                        array_map(function($x) { return $x->cycle; }, $this->sponsors),
-                        array_map(function($x) { return $x->cycle; }, $this->candidates)
-                );
-                $this->cycle = array_pop($cycles);
+                $this->race = array_key_exists('race', $post_metadata)?$post_metadata['race']:'';
+                $this->cycle = array_key_exists('cycle', $post_metadata)?$post_metadata['cycle']:'';
                 $this->message = array_key_exists('ad_message', $post_metadata)?$post_metadata['ad_message']:'';
                 $this->air_count = array_key_exists('air_count', $post_metadata)?$post_metadata['air_count']:'';
                 $this->market_count = array_key_exists('market_count', $post_metadata)?$post_metadata['market_count']:'';
