@@ -21,7 +21,7 @@ class PoliticalAdArchiveCandidate {
 	private $date_created; // The date this record was created in this system
 	private $in_crp; // Is this item in the CRP database or not
 
-	public function PoliticalAdArchiveCandidate($candidate_id) {
+	public function PoliticalAdArchiveCandidate($candidate_id=null) {
 		if(!$candidate_id)
 			return;
 		
