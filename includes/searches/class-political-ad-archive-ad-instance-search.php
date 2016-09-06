@@ -14,6 +14,7 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
     private $ad_ids;
     private $start_time;
     private $end_time;
+    private $after_id;
 
     private $ad_cache = array();
 
@@ -66,9 +67,13 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
         if($this->end_time != null)
             $query_conditions[] = "start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
 
+        if($this->after_id != null)
+            $query_conditions[] = "id > ".(int)($this->after_id);
+
         if(sizeof($query_conditions) > 0)
             $query .= " WHERE ".implode(" AND ", $query_conditions);
 
+        $query .= " ORDER BY id";
         $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
 
         $results = $wpdb->get_results($query);
@@ -100,6 +105,7 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
         // Create the row
         $parsed_row = [
+            "id" => $row->id,
             "wp_identifier" => $ad->wp_id,
             "network" => $network,
             "location" => $location,

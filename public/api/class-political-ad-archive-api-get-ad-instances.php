@@ -52,6 +52,9 @@ class PoliticalAdArchiveApiGetAdInstances {
 	    	if(array_key_exists("end_time", $_GET))
 	    		$instance_search->end_time = $_GET['end_time'];
 
+	    	if(array_key_exists("after_id", $_GET))
+	    		$instance_search->after_id = $_GET['after_id'];
+
 			if(array_key_exists('output', $_GET)
 			&& $_GET['output']=="csv") {
 				$output = PoliticalAdArchiveApiResponse::FORMAT_CSV;
