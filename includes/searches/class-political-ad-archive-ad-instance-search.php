@@ -15,6 +15,8 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
     private $start_time;
     private $end_time;
 
+    private $ad_cache = array();
+
 	public function PoliticalAdArchiveAdInstanceSearch() {
 		$this->posts_per_page = 3000;
 	}
@@ -82,7 +84,11 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
 	private function generate_row($row) {
         $wp_identifier = $row->wp_identifier;
-        $ad = new PoliticalAdArchiveAd($wp_identifier);
+
+        if(!array_key_exists($wp_identifier, $this->ad_cache))
+            $this->ad_cache[$wp_identifier] = new PoliticalAdArchiveAd($wp_identifier);
+
+        $ad = $this->ad_cache[$wp_identifier];
         $network = $row->network;
         $market = $row->market;
         $location = $row->location;
@@ -105,8 +111,8 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
             "embed_url" => $ad->embed_url,
             "sponsors" => implode(', ', $ad->sponsor_names),
             "sponsor_types" => implode(', ', $ad->sponsor_types),
-            "sponsor_affiliations" => implode(', ', $ad->sponsor_affiliations),
-            "sponsor_affiliation_types" => implode(', ', $ad->sponsor_affiliation_types),
+            // "sponsor_affiliations" => implode(', ', $ad->sponsor_affiliations),
+            // "sponsor_affiliation_types" => implode(', ', $ad->sponsor_affiliation_types),
             "race" => $ad->race,
             "cycle" => $ad->cycle,
             "subjects" => implode(", ", $ad->subjects),
