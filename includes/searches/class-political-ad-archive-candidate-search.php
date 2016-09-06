@@ -38,7 +38,7 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
     $candidates_table = $wpdb->prefix.'ad_candidates';
     
     // Collect the counts of ads per market
-    $query = "SELECT ".$candidates_table.".*
+    $query = "SELECT ".$candidates_table.".id
                 FROM ".$candidates_table."
                 JOIN ".$postmeta_table." ON ".$postmeta_table.".meta_value = ".$candidates_table.".name
                 JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
@@ -49,7 +49,7 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
     $results = $wpdb->get_results($query);
     $rows = array();
     foreach($results as $candidate_result) {
-    	$rows[] = $this->generate_row($candidate_result);
+    	$rows[] = $this->generate_row($candidate_result->id);
     }
     if ($page < 1){
       return $rows;
@@ -57,19 +57,21 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
 
 	}
 
-	private function generate_row($row) {
-          $name = $row->name;
-          $race = $row->race;
-          $affiliation = $row->affiliation;
-          $ad_count = $row->ad_count;
-
-        // Create the row
-        $parsed_row = [
-            "name" => $name,
-            "race" => $race,
-            "affiliation" => $affiliation,
-            "ad_count" => $ad_count
-        ];
-        return $parsed_row;
+	private function generate_row($candidate_id) {
+    $candidate = new PoliticalAdArchiveCandidate($candidate_id);
+    // Create the row
+    $parsed_row = [
+      'id' => $candidate->id,
+      'crp_unique_id' => $candidate->crp_unique_id,
+      'name' => $candidate->name,
+      'race' => $candidate->race,
+      'cycle' => $candidate->cycle,
+      'affiliation' => $candidate->affiliation,
+      'ad_count' => $candidate->ad_count,
+      'air_count' => $candidate->air_count,
+      'date_created' => $candidate->date_created,
+      'in_crp' => $candidate->in_crp
+    ];
+    return $parsed_row;
 	}
 }

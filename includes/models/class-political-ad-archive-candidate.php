@@ -21,7 +21,33 @@ class PoliticalAdArchiveCandidate {
 	private $date_created; // The date this record was created in this system
 	private $in_crp; // Is this item in the CRP database or not
 
-	public function PoliticalAdArchiveCandidate() {}
+	public function PoliticalAdArchiveCandidate($candidate_id) {
+		if(!$candidate_id)
+			return;
+		
+		global $wpdb;
+
+        $table_name = $wpdb->prefix . 'ad_candidates';
+        $query = "SELECT *
+                    FROM ".$table_name."
+                    WHERE id = ".(int)($candidate_id)."
+                LIMIT 0,1";
+
+        $result = $wpdb->get_row($query);
+
+        if($result) {
+	    	$this->id = $result->id;
+	    	$this->crp_unique_id = $result->crp_unique_id;
+	    	$this->name = $result->name;
+	    	$this->race = $result->race;
+	    	$this->cycle = $result->cycle;
+	    	$this->affiliation = $result->affiliation;
+	    	$this->ad_count = $result->ad_count;
+	    	$this->air_count = $result->air_count;
+	    	$this->date_created = $result->date_created;
+	    	$this->in_crp = true;
+	    }
+	}
 
 	public function __get($property) {
 		if (property_exists($this, $property)) {
@@ -38,7 +64,18 @@ class PoliticalAdArchiveCandidate {
 	}
 
 	public static function generate_full_candidate($candidate) {
-
+    	$candidate = new PoliticalAdArchiveCandidate();
+    	$candidate->id = $result->id;
+    	$candidate->crp_unique_id = $result->crp_unique_id;
+    	$candidate->name = $result->name;
+    	$candidate->race = $result->race;
+    	$candidate->cycle = $result->cycle;
+    	$candidate->affiliation = $result->affiliation;
+    	$candidate->ad_count = $result->ad_count;
+    	$candidate->air_count = $result->air_count;
+    	$candidate->date_created = $result->date_created;
+    	$candidate->in_crp = true;
+    	$candidates[] = $candidate;
 	}
 
 	/**
