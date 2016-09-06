@@ -85,7 +85,9 @@ class PoliticalAdArchiveApiResponse {
 				if(sizeof($chunk) == 0)
 					break;
 
-				if($page > 0)
+				// If this is JSON we need to delimit chunks
+				if($this->format == PoliticalAdArchiveApiResponse::FORMAT_JSON
+				&& $page > 0)
 	                echo(",");
 
 
@@ -128,13 +130,16 @@ class PoliticalAdArchiveApiResponse {
 
 		switch($this->format) {
 	        case PoliticalAdArchiveApiResponse::FORMAT_CSV:
+	            // create a file pointer connected to the output stream
+	            $output = fopen('php://output', 'w');
+	            
 	            // loop over the rows, outputting them
-	            foreach($rows as $row) {
-	                // create a file pointer connected to the output stream
-	                $output = fopen('php://output', 'w');
+                foreach($rows as $row) {
 	                fputcsv($output, $row);
-	                fclose($output);
 	            }
+
+	            // Close the file pointer
+                fclose($output);
 	            break;
 
 	        case PoliticalAdArchiveApiResponse::FORMAT_JSON:
