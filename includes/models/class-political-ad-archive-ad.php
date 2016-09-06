@@ -63,8 +63,8 @@ class PoliticalAdArchiveAd {
                 $ad_subjects_acf_value = $ad_subjects_acf_value?$ad_subjects_acf_value:array();
                 $this->subjects = array_map(function($x) { return $x['ad_subject']; }, $ad_subjects_acf_value);
                 $this->type = array_key_exists('ad_type', $post_metadata)?$post_metadata['ad_type']:'';
-                $this->race = array_key_exists('ad_race', $post_metadata)?$post_metadata['race']:'';
-                $this->cycle = array_key_exists('ad_cycle', $post_metadata)?$post_metadata['cycle']:'';
+                $this->race = array_key_exists('ad_race', $post_metadata)?$post_metadata['ad_race']:'';
+                $this->cycle = array_key_exists('ad_cycle', $post_metadata)?$post_metadata['ad_cycle']:'';
                 $this->message = array_key_exists('ad_message', $post_metadata)?$post_metadata['ad_message']:'';
                 $this->air_count = array_key_exists('air_count', $post_metadata)?$post_metadata['air_count']:'';
                 $this->market_count = array_key_exists('market_count', $post_metadata)?$post_metadata['market_count']:'';
