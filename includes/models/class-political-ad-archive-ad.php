@@ -90,7 +90,8 @@ class PoliticalAdArchiveAd {
                         FROM ".$meta_table."
                         JOIN ".$posts_table." ON ".$meta_table.".post_id = ".$posts_table.".ID
                        WHERE ".$meta_table.".meta_key LIKE 'references_%reference_title'
-                         AND ".$posts_table.".post_status = 'publish'";
+                         AND ".$posts_table.".post_status = 'publish'
+                    ORDER BY ".$posts_table.".post_date desc";
             $results = $wpdb->get_results($query);
 
             // Package the results
