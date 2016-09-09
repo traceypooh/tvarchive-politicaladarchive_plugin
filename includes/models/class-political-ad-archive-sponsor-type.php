@@ -59,4 +59,46 @@ class PoliticalAdArchiveSponsorType {
 
         return $sponsor_types;
 	}
+
+    public static function get_friendly_sponsor_type_name($sponsor_type) {
+        switch(strtolower($sponsor_type)) {
+            case "candcmte":
+                return "Candidate Committee";
+            case "superpac":
+                return "Super PAC";
+            case "pac":
+                return "PAC";
+            case "501c4":
+                return "Non Profit";
+            case "501c6":
+                return "Trade Association";
+            case "carey":
+                return "Hybrid Super PAC";
+            case "527":
+                return "527";
+            default:
+                return $sponsor_type;
+        }
+    }
+
+    public static function get_sponsor_type_code($sponsor_type) {
+        switch(strtolower($sponsor_type)) {
+            case "candidate committee":
+                return "candcmte";
+            case "super pac":
+                return "superpac";
+            case "pac":
+                return "pac";
+            case "non profit":
+                return "501c4";
+            case "trade association":
+                return "501c6";
+            case "hybrid super pac":
+                return "carey";
+            case "527":
+                return "527";
+            default:
+                return $sponsor_type;
+        }
+    }
 }

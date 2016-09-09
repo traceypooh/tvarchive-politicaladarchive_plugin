@@ -50,7 +50,7 @@ class PoliticalAdArchiveAd {
                 $this->sponsors = PoliticalAdArchiveSponsor::get_sponsors_by_acf_field_value($ad_sponsors_acf_value);
                 $this->sponsor_names = array_map(function($x) { return $x->name; }, $this->sponsors);
                 $this->sponsor_names = array_unique($this->sponsor_names);
-                $this->sponsor_types = array_map(function($x) { return PoliticalAdArchiveAd::get_friendly_sponsor_type_name($x->type); }, $this->sponsors);
+                $this->sponsor_types = array_map(function($x) { return PoliticalAdArchiveSponsorType::get_friendly_sponsor_type_name($x->type); }, $this->sponsors);
                 $this->sponsor_types = array_unique($this->sponsor_types);
                 $this->sponsor_types = sizeof($this->sponsor_types) > 1?array("Multiple"):$this->sponsor_types;
                 $this->sponsor_affiliations = array_map(function($x) { return $x->single_ad_candidate_id; }, $this->sponsors);
@@ -102,26 +102,5 @@ class PoliticalAdArchiveAd {
             }
 
             return $ads;
-    }
-
-    public static function get_friendly_sponsor_type_name($sponsor_type) {
-        switch(strtolower($sponsor_type)) {
-            case "candcmte":
-                return "Candidate Committee";
-            case "superpac":
-                return "Super PAC";
-            case "pac":
-                return "PAC";
-            case "501c4":
-                return "Non Profit";
-            case "501c6":
-                return "Trade Association";
-            case "carey":
-                return "Hybrid Super PAC";
-            case "527":
-                return "527";
-            default:
-                return $sponsor_type;
-        }
     }
 }

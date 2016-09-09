@@ -41,6 +41,10 @@ class PoliticalAdArchiveApiGetAds {
 			$search->candidate_filters = array_key_exists('candidate_filter',$_GET)?$_GET['candidate_filter']:array();
 			$search->sponsor_filters = array_key_exists('sponsor_filter',$_GET)?$_GET['sponsor_filter']:array();
 			$search->sponsor_type_filters = array_key_exists('sponsor_type_filter',$_GET)?$_GET['sponsor_type_filter']:array();
+			$search->sponsor_type_filters = array_map(function($x) {
+				$x['term'] = PoliticalAdArchiveSponsorType::get_sponsor_type_code($x['term']);
+				return $x;
+			}, $search->sponsor_type_filters);
 			$search->subject_filters = array_key_exists('subject_filter',$_GET)?$_GET['subject_filter']:array();
 			$search->type_filters = array_key_exists('type_filter',$_GET)?$_GET['type_filter']:array();
 			$search->market_filters = array_key_exists('market_filter',$_GET)?$_GET['market_filter']:array();
