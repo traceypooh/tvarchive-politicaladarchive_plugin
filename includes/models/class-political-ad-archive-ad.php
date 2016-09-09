@@ -43,7 +43,7 @@ class PoliticalAdArchiveAd {
                 $post_date = 
                 $this->wp_id = $wp_id;
                 $this->embed_url = array_key_exists('embed_url', $post_metadata)?$post_metadata['embed_url']:'';
-                $this->notes = array_key_exists('notes', $post_metadata)?$post_metadata['notes']:'';
+                $this->notes = array_key_exists('ad_notes', $post_metadata)?$post_metadata['ad_notes']:'';
                 $this->archive_id = array_key_exists('archive_id', $post_metadata)?$post_metadata['archive_id']:'';
                 $ad_sponsors_acf_value = array_key_exists('ad_sponsors', $post_metadata)?$post_metadata['ad_sponsors']:array();
                 $ad_sponsors_acf_value = $ad_sponsors_acf_value?$ad_sponsors_acf_value:array();
