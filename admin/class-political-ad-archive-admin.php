@@ -694,6 +694,8 @@ class PoliticalAdArchiveAdmin {
             "RDU" => "Raleigh-Durham-Fayetteville,  NC",
             "RNO" => "Reno, NV",
             "ROA" => "Roanoke-Lynchburg, VA",
+            "MKE" => "Milwaukee, WI",
+            "PHX" => "Phoenix-Prescott, AZ",
             "SF" =>  "San Francisco-Oakland-San Jose, CA",
             "SUX" => "Sioux City, Iowa",
             "TPA" => "Tampa-St. Petersburg, FL",
