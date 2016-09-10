@@ -30,6 +30,10 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
 		return $this;
 	}
 
+  public function get_total_rows() {
+      return -1;
+  }
+
 	public function get_chunk($page) {
 
     global $wpdb;

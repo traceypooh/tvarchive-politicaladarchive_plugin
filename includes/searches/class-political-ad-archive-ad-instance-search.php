@@ -36,6 +36,10 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 		return $this;
 	}
 
+    public function get_total_rows() {
+        return -1;
+    }
+
 	public function get_chunk($page) {
         global $wpdb;
 
@@ -74,7 +78,9 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
             $query .= " WHERE ".implode(" AND ", $query_conditions);
 
         $query .= " ORDER BY id";
-        $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
+
+        if($this->per_page != -1)
+            $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
 
         $results = $wpdb->get_results($query);
 	    $rows = array();

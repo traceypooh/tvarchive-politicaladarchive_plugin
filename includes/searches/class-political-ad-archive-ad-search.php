@@ -87,23 +87,27 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		return $filter_array;
 	} 
 
-	public function get_chunk($page) {
-		$filtered_ids = $this->get_filtered_ids();
+	public function get_total_rows() {
+		return $this->get_chunk(0, true);
+	}
 
-		// Do we only want specific pages
-		if(sizeof($this->pages) > 0) {
-			// Are we done
-			if(!(array_key_exists($page, $this->pages)))
-				return array();
-			$page = $this->pages[$page];
-		}
+	// This is terrible, but if you pass true to the second parameter
+	// then the first is ignored and a total count is returned
+	public function get_chunk($page, $get_count=false) {
+		$filtered_ids = $this->get_filtered_ids();
 
 		global $wpdb;
         $instances_table = $wpdb->prefix . 'ad_instances';
         $posts_table = $wpdb->prefix . 'posts';
-		$query = "SELECT ".$posts_table.".ID as post_id,
-		           		 count(".$instances_table.".id) as air_count
-		           	FROM ".$posts_table."
+
+        if($get_count) {
+			$query = "SELECT count(DISTINCT ".$posts_table.".ID) as row_count";
+		} else {
+			$query = "SELECT ".$posts_table.".ID as post_id,
+			           		 count(".$instances_table.".id) as air_count";
+		}
+
+		$query .= " FROM ".$posts_table."
 		       LEFT JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
 		           WHERE ".$posts_table.".post_status = 'publish'
 		             AND ".$posts_table.".ID IN (".implode(((sizeof($filtered_ids) > 0)?$filtered_ids:array(-1)), ",").")";
@@ -124,22 +128,38 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         if(sizeof($query_parts) > 0)
             $query .= " AND ".implode($query_parts, " AND ");
 
-        $query .= " GROUP BY ".$posts_table.".ID ";
+        // Are we gtting results or pages
+        if(!$get_count) {
 
-        if($this->sort == "air_count")
-        	$query .= " ORDER BY air_count DESC ";
-        else
-        	$query .= " ORDER BY ".$posts_table.".post_date DESC ";
+			// Do we only want specific pages
+			if(sizeof($this->pages) > 0) {
+				if(!(array_key_exists($page, $this->pages)))
+					return array();
+				$page = $this->pages[$page];
+			}
+	        $query .= " GROUP BY ".$posts_table.".ID ";
 
-		$query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
-        $results = $wpdb->get_results($query);
-	    $rows = array();
-	    foreach($results as $result) {
-	    	$ad_id = $result->post_id;
-	    	$air_count = $result->air_count;
-	    	$rows[] = $this->generate_row($ad_id, $air_count);
-	    }
-	    return $rows;
+	        if($this->sort == "air_count")
+	        	$query .= " ORDER BY air_count DESC ";
+	        else
+	        	$query .= " ORDER BY ".$posts_table.".post_date DESC ";
+
+	        if($this->per_page != -1)
+				$query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
+
+	        $results = $wpdb->get_results($query);
+		    $rows = array();
+		    foreach($results as $result) {
+		    	$ad_id = $result->post_id;
+		    	$air_count = $result->air_count;
+		    	$rows[] = $this->generate_row($ad_id, $air_count);
+		    }
+		    return $rows;
+		} else {
+	        $result = $wpdb->get_row($query);
+	        return $result->row_count;
+		}
+
 	}
 
     private function generate_instance_filter_query_part($filters, $field) {

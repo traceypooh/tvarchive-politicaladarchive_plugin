@@ -118,7 +118,18 @@ class PoliticalAdArchiveApiResponse {
 	            fclose($output);
 	            break;
 	        case PoliticalAdArchiveApiResponse::FORMAT_JSON:
-	            echo("[");
+	        	$total_results = 0;
+	        	if($this->data instanceof PoliticalAdArchiveBufferedQuery)
+		        	$total_results = $this->data->get_total_rows();
+
+				if(is_array($this->data))
+					$total_results = sizeof($this->data);
+
+	        	echo('
+		        	{
+		        		"total_results": ".$total_results.",
+		        		"data":
+		        			[');
 	            break;
 	    }
 	}
@@ -155,7 +166,7 @@ class PoliticalAdArchiveApiResponse {
 	        case PoliticalAdArchiveApiResponse::FORMAT_CSV:
 	            break;
 	        case PoliticalAdArchiveApiResponse::FORMAT_JSON:
-	            echo("]");
+	            echo("]}");
 	            break;
 	    }
 	}

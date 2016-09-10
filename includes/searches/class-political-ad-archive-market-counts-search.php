@@ -32,6 +32,10 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 		return $this;
 	}
 
+  public function get_total_rows() {
+      return -1;
+  }
+
 	public function get_chunk($page) {
     global $wpdb;
 
