@@ -127,7 +127,7 @@ class PoliticalAdArchiveApiResponse {
 
 	        	echo('
 		        	{
-		        		"total_results": ".$total_results.",
+		        		"total_results": '.$total_results.',
 		        		"data":
 		        			[');
 	            break;
