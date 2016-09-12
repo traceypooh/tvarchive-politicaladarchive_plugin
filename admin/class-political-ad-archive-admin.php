@@ -109,6 +109,7 @@ class PoliticalAdArchiveAdmin {
     public function load_canonical_ads() {
         // This script runs in the background and should be allowed to run as long as needed
         set_time_limit(0);
+        ini_set('max_execution_time', 0);
 
         // Get a list of ad instances from the archive
         $canonical_ads = $this->get_ad_list();
@@ -143,6 +144,7 @@ class PoliticalAdArchiveAdmin {
     public function load_ad_metadata() {
         // This script runs in the background and should be allowed to run as long as needed
         set_time_limit(0);
+        ini_set('max_execution_time', 0);
 
         error_log("Loading Ad Metadata");
         global $wpdb;
@@ -256,6 +258,7 @@ class PoliticalAdArchiveAdmin {
     public function load_ad_instances() {
         // This script runs in the background and should be allowed to run as long as needed
         set_time_limit(0);
+        ini_set('max_execution_time', 0);
 
         error_log("Loading Ad Instances");
         global $wpdb;
@@ -441,6 +444,7 @@ class PoliticalAdArchiveAdmin {
     public function load_candidates() {
         // This script runs in the background and should be allowed to run as long as needed
         set_time_limit(0);
+        ini_set('max_execution_time', 0);
 
         error_log("Loading Candidates");
         global $wpdb;
@@ -531,6 +535,7 @@ class PoliticalAdArchiveAdmin {
     public function load_sponsors() {
         // This script runs in the background and should be allowed to run as long as needed
         set_time_limit(0);
+        ini_set('max_execution_time', 0);
 
         error_log("Loading Sponsors");
         global $wpdb;
