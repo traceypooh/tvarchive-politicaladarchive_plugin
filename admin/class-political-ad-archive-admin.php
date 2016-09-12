@@ -516,7 +516,7 @@ class PoliticalAdArchiveAdmin {
 
             $table_name = $wpdb->prefix . 'ad_candidates';
             if(array_key_exists($crp_unique_id, $existing_candidates)) {
-                $values['id'] =$existing_candidates[$crp_unique_id];
+                $values['id'] = $existing_candidates[$crp_unique_id];
                 $wpdb->update(
                     $table_name,
                     $values,
@@ -527,8 +527,10 @@ class PoliticalAdArchiveAdmin {
                     $table_name,
                     $values
                 );
-            }
 
+                // Add the ID to prevent double creation if there's a dupe in one session
+                $existing_candidates[$crp_unique_id] = $wpdb->insert_id;
+            }
         }
     }
 
@@ -633,7 +635,10 @@ class PoliticalAdArchiveAdmin {
                 $wpdb->insert(
                     $table_name,
                     $values
-                );                
+                );
+
+                // Add the ID to prevent double creation if there's a dupe in one session
+                $existing_candidates[$crp_unique_id] = $wpdb->insert_id;             
             }
 
         }
