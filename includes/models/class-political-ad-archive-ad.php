@@ -73,7 +73,7 @@ class PoliticalAdArchiveAd {
                 $this->transcript = array_key_exists('transcript', $post_metadata)? $post_metadata['transcript']:'';
                 $this->date_ingested = get_the_date('Y/m/d g:i:s', $wp_id)." UTC";
                 $this->references = array_key_exists('references', $post_metadata)? $post_metadata['references']:array();
-                $this->reference_count = sizeof($this->references);
+                $this->reference_count = is_array($this_references)?sizeof($this->references):0;
 	}
 	
 	public function __get($property) {
