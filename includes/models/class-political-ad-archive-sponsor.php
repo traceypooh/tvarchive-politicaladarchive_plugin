@@ -171,10 +171,24 @@ class PoliticalAdArchiveSponsor {
 	 */
 	public static function get_sponsors_by_acf_field_value($sponsors_field) {
 		$sponsor_names = array();
+		$type_overrides = array();
+
+		// Load in the sponsor objects
 		foreach($sponsors_field as $sponsor_field) {
 			$sponsor_names[] = $sponsor_field['ad_sponsor'];
+			if($sponsor_field['sponsor_type_override'])
+				$type_overrides[$sponsor_field['ad_sponsor']] = $sponsor_field['sponsor_type_override'];
 		}
-		return self::get_sponsors_by_names($sponsor_names);
+
+		$sponsors = self::get_sponsors_by_names($sponsor_names);
+
+		// Apply any type overrides
+		foreach($sponsors as $x => $sponsor) {
+			if(array_key_exists($sponsor->name , $type_overrides))
+				$sponsor->type = $type_overrides[$sponsor->name];
+			$sponsors[$x] = $sponsor;
+		}
+		return $sponsors;
 	}
 
 }

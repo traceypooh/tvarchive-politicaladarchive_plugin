@@ -83,6 +83,37 @@
                     "maxlength": "",
                     "readonly": 0,
                     "disabled": 0
+                },
+                {
+                    "key": "field_57e2fa106cd24",
+                    "label": "Sponsor Type Override",
+                    "name": "sponsor_type_override",
+                    "type": "select",
+                    "instructions": "Override 3rd party data",
+                    "required": 0,
+                    "conditional_logic": 0,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "choices": {
+                        "candcmte": "candcmte",
+                        "superpac": "superpac",
+                        "pac": "pac",
+                        "501c4": "501c4",
+                        "501c6": "501c6",
+                        "carey": "carey",
+                        "527": 527
+                    },
+                    "default_value": [],
+                    "allow_null": 1,
+                    "multiple": 0,
+                    "ui": 0,
+                    "ajax": 0,
+                    "placeholder": "",
+                    "disabled": 0,
+                    "readonly": 0
                 }
             ]
         },
@@ -551,5 +582,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1468531038
+    "modified": 1474493473
 }
