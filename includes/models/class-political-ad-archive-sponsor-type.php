@@ -76,6 +76,10 @@ class PoliticalAdArchiveSponsorType {
                 return "Hybrid Super PAC";
             case "527":
                 return "527";
+            case "corp":
+                return "Corporation";
+            case "jfc":
+                return "Joint Fundraising Committee";
             default:
                 return $sponsor_type;
         }
@@ -97,6 +101,10 @@ class PoliticalAdArchiveSponsorType {
                 return "carey";
             case "527":
                 return "527";
+            case "corporation":
+                return "corp";
+            case "joint fundraising committee":
+                return "jfc";
             default:
                 return $sponsor_type;
         }
