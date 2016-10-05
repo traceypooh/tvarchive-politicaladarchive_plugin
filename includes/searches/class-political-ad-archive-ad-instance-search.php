@@ -79,9 +79,9 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
         $query .= " ORDER BY id";
 
-        if($this->per_page != -1)
+        if($this->posts_per_page != -1)
             $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
-
+        
         $results = $wpdb->get_results($query);
 	    $rows = array();
 	    foreach($results as $ad_instance) {
