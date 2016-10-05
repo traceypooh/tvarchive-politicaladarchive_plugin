@@ -151,6 +151,10 @@ class PoliticalAdArchiveApiResponse {
 
 	            // Close the file pointer
                 fclose($output);
+
+                // Force the chunk (rather than buffering)
+                flush();
+                ob_flush();
 	            break;
 
 	        case PoliticalAdArchiveApiResponse::FORMAT_JSON:
