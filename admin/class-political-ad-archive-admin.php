@@ -310,6 +310,13 @@ class PoliticalAdArchiveAdmin {
                 $start_override = get_field('start_override', $wp_identifier);
                 $end_override = get_field('end_override', $wp_identifier);
 
+                // If this is a house or senate ad, set up a regional override...
+                $ad_race = get_field('ad_race', $wp_identifier);
+                $market_overrides = array();
+                if($ad_race != ""
+                && $ad_race != "PRES")
+                    $market_overrides = $this->get_market_overrides_by_state(substr($ad_race, 0,2));
+
                 // Iterate through each instance
                 foreach($instances as $instance) {
                     $network = $instance->chan;
@@ -324,6 +331,11 @@ class PoliticalAdArchiveAdmin {
                     // Does this instance already exist in our database?
                     if(array_key_exists($network, $existing_instances)
                     && array_search("".strtotime($start_time), $existing_instances[$network]) !== false)
+                        continue;
+
+                    // Does this instance happen in a market we care about
+                    if(sizeof($market_overrides) > 0
+                    && !in_array($market, $market_overrides))
                         continue;
 
                     // If the start time isn't within the override range, skip this airing
@@ -365,6 +377,13 @@ class PoliticalAdArchiveAdmin {
                     $query = $wpdb->prepare('DELETE FROM %1$s WHERE UNIX_TIMESTAMP(start_time) > %2$d && wp_identifier = %3$d', array($table_name, strtotime($end_override), $wp_identifier));
                     $wpdb->query($query);
                 }
+
+                if(sizeof($market_overrides) > 0) {
+                    $table_name = $wpdb->prefix . 'ad_instances';
+                    $query = $wpdb->prepare('DELETE FROM %1$s WHERE market NOT IN ("%2$s") && wp_identifier = %3$d', array($table_name, implode('","', $market_overrides), $wp_identifier));
+                    $wpdb->query($query);
+                }
+
             } catch( Exception $e ) {
                 error_log($e);
             }
@@ -732,6 +751,113 @@ class PoliticalAdArchiveAdmin {
         }
 
         return $transcripts;
+    }
+
+    private function get_market_overrides_by_state($state_code) {
+        switch($state_code) {
+            case "AL":
+                return array();
+            case "AK":
+                return array();
+            case "AZ":
+                return array("PHX");
+            case "AR":
+                return array();
+            case "CA":
+                return array("SF");
+            case "CO":
+                return array("COS", "DEN");
+            case "CT":
+                return array();
+            case "DE":
+                return array();
+            case "FL":
+                return array("MCO", "MIA", "TPA");
+            case "GA":
+                return array();
+            case "HI":
+                return array();
+            case "ID":
+                return array();
+            case "IL":
+                return array();
+            case "IN":
+                return array();
+            case "IA":
+                return array("CID", "DSM", "SUX");
+            case "KS":
+                return array();
+            case "KY":
+                return array();
+            case "LA":
+                return array();
+            case "ME":
+                return array();
+            case "MD":
+                return array("VA");
+            case "MA":
+                return array("BOS");
+            case "MI":
+                return array();
+            case "MN":
+                return array();
+            case "MS":
+                return array();
+            case "MO":
+                return array();
+            case "MT":
+                return array();
+            case "NE":
+                return array();
+            case "NV":
+                return array("LAS", "RNO");
+            case "NH":
+                return array("BOS");
+            case "NJ":
+                return array();
+            case "NM":
+                return array();
+            case "NY":
+                return array("NYC");
+            case "NC":
+                return array("CLT", "GSP", "ORF", "RDU");
+            case "ND":
+                return array();
+            case "OH":
+                return array("CLE", "CVG");
+            case "OK":
+                return array();
+            case "OR":
+                return array();
+            case "PA":
+                return array("PHL");
+            case "RI":
+                return array("BOS");
+            case "SC":
+                return array("CAE");
+            case "SD":
+                return array();
+            case "TN":
+                return array();
+            case "TX":
+                return array();
+            case "UT":
+                return array();
+            case "VT":
+                return array("BOS");
+            case "VA":
+                return array("ROA");
+            case "WA":
+                return array();
+            case "WV":
+                return array();
+            case "WI":
+                return array("MKE");
+            case "WY":
+                return array();
+            default:
+                return array();
+        }
     }
 
     private function get_ad_list() {
