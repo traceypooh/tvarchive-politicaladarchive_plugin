@@ -314,8 +314,11 @@ class PoliticalAdArchiveAdmin {
                 $ad_race = get_field('ad_race', $wp_identifier);
                 $market_overrides = array();
                 if($ad_race != ""
-                && $ad_race != "PRES")
-                    $market_overrides = $this->get_market_overrides_by_state(substr($ad_race, 0,2));
+                && $ad_race != "PRES") {
+                    $ad_state = substr($ad_race, 0,2);
+                    error_log('Ad State: "'.$ad_state.'"');
+                    $market_overrides = $this->get_market_overrides_by_state($ad_state);
+                }
 
                 // Iterate through each instance
                 foreach($instances as $instance) {
@@ -335,8 +338,10 @@ class PoliticalAdArchiveAdmin {
 
                     // Does this instance happen in a market we care about
                     if(sizeof($market_overrides) > 0
-                    && !in_array($market, $market_overrides))
+                    && !in_array($market, $market_overrides)) {
+                        echo("Skipped false positive: in ".$market);
                         continue;
+                    }
 
                     // If the start time isn't within the override range, skip this airing
                     if($start_override != null
@@ -380,7 +385,7 @@ class PoliticalAdArchiveAdmin {
 
                 if(sizeof($market_overrides) > 0) {
                     $table_name = $wpdb->prefix . 'ad_instances';
-                    $query = $wpdb->prepare('DELETE FROM %1$s WHERE market NOT IN ("%2$s") && wp_identifier = %3$d', array($table_name, implode('","', $market_overrides), $wp_identifier));
+                    $query = $wpdb->prepare('DELETE FROM %1$s WHERE market NOT IN ("'.implode('","', $market_overrides).'") && wp_identifier = %2$d', array($table_name, $wp_identifier));
                     $wpdb->query($query);
                 }
 
@@ -858,6 +863,7 @@ class PoliticalAdArchiveAdmin {
             default:
                 return array();
         }
+        return array();
     }
 
     private function get_ad_list() {
