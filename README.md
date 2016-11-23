@@ -1,13 +1,13 @@
 #The Political Ad Archive
 
-Contributors: slifty
-Donate link: https://archive.org/donate/
-Tags: political ads, politics, video, data, elections
-Requires at least: 4.5.0
-Tested up to: 4.5.2
-Stable tag: 4.5.2
-License: TBD
-License URI: TBD
+- Contributors: slifty
+- Donate link: https://archive.org/donate/
+- Tags: political ads, politics, video, data, elections
+- Requires at least: 4.5.0
+- Tested up to: 4.5.2
+- Stable tag: 4.5.2
+- License: TBD
+- License URI: TBD
 
 This plugin enables integration with the Internet Archive's Political Ad Archive dataset in your wordpress plugin.
 
