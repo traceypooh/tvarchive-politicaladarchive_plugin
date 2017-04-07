@@ -134,7 +134,7 @@ class PoliticalAdArchiveAdmin {
 
             // Set the "refresh" custom field to true
             // TODO: define that custom field
-            update_field('field_576368cd22146', true); // Queued for reset
+            update_field('field_576368cd22146', true, $wp_identifier); // Queued for reset
         }
     }
 
@@ -338,10 +338,8 @@ class PoliticalAdArchiveAdmin {
 
                     // Does this instance happen in a market we care about
                     if(sizeof($market_overrides) > 0
-                    && !in_array($market, $market_overrides)) {
-                        echo("Skipped false positive: in ".$market);
+                    && !in_array($market, $market_overrides))
                         continue;
-                    }
 
                     // If the start time isn't within the override range, skip this airing
                     if($start_override != null

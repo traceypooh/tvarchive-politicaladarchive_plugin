@@ -469,6 +469,27 @@
                     "display_format": "F j, Y",
                     "return_format": "F j, Y",
                     "first_day": 0
+                },
+                {
+                    "key": "field_58e7b023bd4b9",
+                    "label": "Share The Facts",
+                    "name": "share_the_facts",
+                    "type": "text",
+                    "instructions": "If this reference has a share the facts URL, include it here",
+                    "required": "",
+                    "conditional_logic": "",
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "default_value": "",
+                    "placeholder": "",
+                    "prepend": "",
+                    "append": "",
+                    "maxlength": "",
+                    "readonly": 0,
+                    "disabled": 0
                 }
             ]
         },
@@ -582,5 +603,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1474493473
+    "modified": 1491578943
 }
