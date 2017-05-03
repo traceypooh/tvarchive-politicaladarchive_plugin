@@ -339,18 +339,24 @@ class PoliticalAdArchiveAdmin {
                     // Does this instance happen in a market we care about
                     if(sizeof($market_overrides) > 0
                     && !in_array($market, $market_overrides)) {
-                        echo("Skipped false positive: in ".$market);
+                        error_log("Skipped market mismatch: in ".$market);
                         continue;
                     }
 
                     // If the start time isn't within the override range, skip this airing
                     if($start_override != null
-                    && strtotime($start_override) > strtotime($start_time))
+                    && strtotime($start_override) > strtotime($start_time)) {
+                        error_log("Skipped start override: ".$start_time)
                         continue;
+                    }
 
                     if($end_override != null
-                    && strtotime($end_override) < strtotime($start_time))
+                    && strtotime($end_override) < strtotime($start_time)) {
+                        error_log("Skipped end override: ".$start_time)
                         continue;
+                    }
+
+                    error_log("New Instance: ".$network.": ".$start_time)
 
                     $table_name = $wpdb->prefix . 'ad_instances';
                     $wpdb->insert(
