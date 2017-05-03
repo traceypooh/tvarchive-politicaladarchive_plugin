@@ -134,7 +134,7 @@ class PoliticalAdArchiveAdmin {
 
             // Set the "refresh" custom field to true
             // TODO: define that custom field
-            update_field('field_576368cd22146', true); // Queued for reset
+            update_field('field_576368cd22146', true, $wp_identifier); // Queued for reset
         }
     }
 
