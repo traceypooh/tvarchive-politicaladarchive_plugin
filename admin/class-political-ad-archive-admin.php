@@ -346,17 +346,17 @@ class PoliticalAdArchiveAdmin {
                     // If the start time isn't within the override range, skip this airing
                     if($start_override != null
                     && strtotime($start_override) > strtotime($start_time)) {
-                        error_log("Skipped start override: ".$start_time)
+                        error_log("Skipped start override: ".$start_time);
                         continue;
                     }
 
                     if($end_override != null
                     && strtotime($end_override) < strtotime($start_time)) {
-                        error_log("Skipped end override: ".$start_time)
+                        error_log("Skipped end override: ".$start_time);
                         continue;
                     }
 
-                    error_log("New Instance: ".$network.": ".$start_time)
+                    error_log("New Instance: ".$network.": ".$start_time);
 
                     $table_name = $wpdb->prefix . 'ad_instances';
                     $wpdb->insert(
