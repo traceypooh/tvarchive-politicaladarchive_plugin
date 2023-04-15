@@ -668,7 +668,7 @@ class PoliticalAdArchiveAdmin {
                 );
 
                 // Add the ID to prevent double creation if there's a dupe in one session
-                $existing_candidates[$crp_unique_id] = $wpdb->insert_id;             
+                $existing_candidates[$crp_unique_id] = $wpdb->insert_id;
             }
 
         }
@@ -879,7 +879,7 @@ class PoliticalAdArchiveAdmin {
 
         $organized_canonical_ads = array();
         foreach($canonical_ads as $canonical_ad) {
-            $organized_canonical_ads[$canonical_ad->identifier] = $canonical_ad;
+            $organized_canonical_ads[$canonical_ad] = $canonical_ad;
         }
 
         return $organized_canonical_ads;
