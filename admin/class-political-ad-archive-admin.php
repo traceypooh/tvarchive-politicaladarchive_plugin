@@ -178,7 +178,7 @@ class PoliticalAdArchiveAdmin {
                 $ad_embed_url = 'https://archive.org/embed/'.$ad_identifier;
                 $ad_type = "Political Ad";
                 $ad_race = "";
-                $ad_message = property_exists($metadata, 'message')?$metadata->message:'unknown';
+                $ad_message = property_exists($metadata, 'message')?$metadata->message:'unknown'; // xxx went missing from API
                 // Check if message is an array (unclear why this happens sometimes)
                 $ad_message = is_array($ad_message)?array_pop($ad_message):$ad_message;
 
@@ -208,7 +208,7 @@ class PoliticalAdArchiveAdmin {
 
                 // Store the candidates
                 $candidates = array();
-                if(property_exists($metadata, 'candidate')
+                if(property_exists($metadata, 'candidate') // xxx went missing from API
                 && is_array($metadata->candidate)) {
                     foreach($metadata->candidate as $candidate) {
 
@@ -877,9 +877,9 @@ class PoliticalAdArchiveAdmin {
         $url_result = file_get_contents($url);
         $canonical_ads = json_decode($url_result);
 
-        $organized_canonical_ads = array();
+        $organized_canonical_ads = [];
         foreach($canonical_ads as $canonical_ad) {
-            $organized_canonical_ads[$canonical_ad] = $canonical_ad;
+            $organized_canonical_ads[$canonical_ad->identifier] = $canonical_ad;
         }
 
         return $organized_canonical_ads;
