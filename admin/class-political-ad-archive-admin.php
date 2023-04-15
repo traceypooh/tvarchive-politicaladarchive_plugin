@@ -356,7 +356,7 @@ class PoliticalAdArchiveAdmin {
                         continue;
                     }
 
-                    error_log("New Instance: ".$network.": ".$start_time);
+                    error_log("New Instance $ad_identifier: $network: $start_time");
 
                     $table_name = $wpdb->prefix . 'ad_instances';
                     $wpdb->insert(
