@@ -40,7 +40,6 @@ class PoliticalAdArchiveAd {
 
 	public function PoliticalAdArchiveAd($wp_id) {
                 $post_metadata = get_fields($wp_id);
-                $post_date = 
                 $this->wp_id = $wp_id;
                 $this->embed_url = array_key_exists('embed_url', $post_metadata)?$post_metadata['embed_url']:'';
                 $this->notes = array_key_exists('ad_notes', $post_metadata)?$post_metadata['ad_notes']:'';
@@ -75,7 +74,7 @@ class PoliticalAdArchiveAd {
                 $this->references = array_key_exists('references', $post_metadata)? $post_metadata['references']:array();
                 $this->reference_count = is_array($this->references)?sizeof($this->references):0;
 	}
-	
+
 	public function __get($property) {
 		if (property_exists($this, $property)) {
 		      return $this->$property;
