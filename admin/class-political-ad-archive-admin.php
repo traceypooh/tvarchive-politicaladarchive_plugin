@@ -325,8 +325,8 @@ class PoliticalAdArchiveAdmin {
                     $network = $instance->chan;
                     $market = array_key_exists($network, $network_lookup)?$network_lookup[$network]['market']:'';
                     $location = array_key_exists($market, $market_translations)?$market_translations[$market]:'';
-                    $start_time = date("Y-m-d H:i:s", $instance->start);
-                    $end_time = date("Y-m-d H:i:s", $instance->end);
+                    $start_time = date("Y-m-d H:i:s", round($instance->start));
+                    $end_time = date("Y-m-d H:i:s", round($instance->end));
                     $date_created = date("Y-m-d H:i:s");
                     $program = $instance->title;
                     $program_type = $instance->program_type;
