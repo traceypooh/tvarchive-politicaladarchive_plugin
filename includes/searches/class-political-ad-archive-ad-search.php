@@ -113,7 +113,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		$query .= " FROM ".$posts_table."
 		       LEFT JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
 		           WHERE ".$posts_table.".post_status = 'publish'
-		             AND ".$posts_table.".ID IN (".implode(((count((array)$this->filtered_ids))?$filtered_ids:array(-1)), ",").")";
+		             AND ".$posts_table.".ID IN (".implode(',', ((count((array)$this->filtered_ids))?$filtered_ids:array(-1))).")";
 
         // Instance filters
         $query_parts = array();
@@ -129,7 +129,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 			$query_parts[] = $instances_table.".start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
 
         if(count((array)$this->query_parts))
-            $query .= " AND ".implode($query_parts, " AND ");
+            $query .= " AND ".implode(' AND ', $query_parts);
 
         // Are we gtting results or pages
         if(!$get_count) {
@@ -189,11 +189,11 @@ error_log("AAAS $query");
 
         $subquery .= "(";
         if(count((array)$this->and_parts))
-            $subquery .= "(".implode($and_parts, " AND ").")";
+            $subquery .= "(".implode(' AND ', $and_parts).")";
         else
             $subquery .= "false";
         if(count((array)$this->or_parts))
-            $subquery .= " OR (".implode($or_parts, " OR ").")";
+            $subquery .= " OR (".implode(' OR ', $or_parts).")";
         $subquery .= ")";
         return $subquery;
     }
