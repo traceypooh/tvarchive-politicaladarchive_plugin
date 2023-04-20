@@ -12,7 +12,7 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
 
 	private $posts_per_page;
 
-	public function PoliticalAdArchiveAdCandidateSearch($args = null) {
+	public function __construct($args = null) {
 
 	}
 
@@ -40,7 +40,7 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
     $postmeta_table = $wpdb->prefix . 'postmeta';
     $post_table = $wpdb->prefix . 'posts';
     $candidates_table = $wpdb->prefix.'ad_candidates';
-    
+
     // Collect the counts of ads per market
     $query = "SELECT ".$candidates_table.".id
                 FROM ".$candidates_table."

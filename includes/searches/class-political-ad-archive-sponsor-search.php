@@ -12,7 +12,7 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
 
 	private $posts_per_page;
 
-	public function PoliticalAdArchiveAdSponsorSearch($args = null) {
+	public function __construct($args = null) {
 
 	}
 
@@ -42,7 +42,7 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
     $postmeta_table = $wpdb->prefix . 'postmeta';
     $post_table = $wpdb->prefix . 'posts';
     $sponsors_table = $wpdb->prefix.'ad_sponsors';
-    
+
     // Collect the counts of ads per market
     $query = "SELECT ".$sponsors_table.".*
                 FROM ".$sponsors_table."

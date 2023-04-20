@@ -17,14 +17,14 @@ class PoliticalAdArchiveCandidate {
 	private $cycle; // The time period the candidate ran
 	private $affiliation; // The political party affiliation of the candidate
 	private $ad_count; // Number of unique ads
-	private $air_count; // Number of unique airings	
+	private $air_count; // Number of unique airings
 	private $date_created; // The date this record was created in this system
 	private $in_crp; // Is this item in the CRP database or not
 
-	public function PoliticalAdArchiveCandidate($candidate_id=null) {
+	public function __construct($candidate_id=null) {
 		if(!$candidate_id)
 			return;
-		
+
 		global $wpdb;
 
         $table_name = $wpdb->prefix . 'ad_candidates';

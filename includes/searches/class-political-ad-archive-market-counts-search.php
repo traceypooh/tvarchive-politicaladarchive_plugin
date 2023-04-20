@@ -14,7 +14,7 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
   private $start_time;
   private $end_time;
 
-	public function PoliticalAdArchiveAdMarketCountsSearch($args = null) {
+	public function __construct($args = null) {
 
 	}
 
@@ -57,12 +57,12 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
               ,market as market_code
               ,location as location
               FROM ".$table_name;
-    
+
     $query_conditions = array();
     $query_conditions[] = "wp_identifier IN (".implode(",", $published_ad_ids).")";
     if($this->start_time != null)
         $query_conditions[] = "end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($this->start_time)))."'";
-    
+
     if($this->end_time != null)
         $query_conditions[] = "start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
 

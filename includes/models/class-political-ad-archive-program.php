@@ -13,7 +13,7 @@ class PoliticalAdArchiveProgram {
 	private $program; // The name of the program
 	private $program_type; // The type of the program
 
-	public function PoliticalAdArchiveProgram() {}
+	public function __construct() {}
 
 	public function __get($property) {
 		if (property_exists($this, $property)) {
@@ -40,7 +40,7 @@ class PoliticalAdArchiveProgram {
         $posts_table = $wpdb->prefix . 'posts';
         $instances_table = $wpdb->prefix . 'ad_instances';
         $query = "SELECT DISTINCT ".$instances_table.".program as program,
-        			     ".$instances_table.".program_type as program_type 
+        			     ".$instances_table.".program_type as program_type
 				    FROM ".$instances_table."
 				    JOIN ".$posts_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
 				   WHERE ".$posts_table.".post_status = 'publish'";

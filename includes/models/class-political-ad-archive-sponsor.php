@@ -23,7 +23,7 @@ class PoliticalAdArchiveSponsor {
 	private $date_created; // The date this record was created in this system
 	private $in_crp; // Is this item in the CRP database or not
 
-	public function PoliticalAdArchiveSponsor() {}
+	public function __construct() {}
 
 	public function __get($property) {
 		if (property_exists($this, $property)) {
@@ -38,7 +38,7 @@ class PoliticalAdArchiveSponsor {
 
 		return $this;
 	}
-	
+
 	public static function get_sponsors() {
 		global $wpdb;
 
@@ -121,7 +121,7 @@ class PoliticalAdArchiveSponsor {
 		foreach($names as $name) {
 			$sanitized_names[] = "'".esc_sql($name)."'";
 		}
-		
+
 		if(sizeof($sanitized_names) == 0)
 			return array();
 

@@ -12,7 +12,7 @@ class PoliticalAdArchiveChannel {
 
 	private $channel; // The name of the channel
 
-	public function PoliticalAdArchiveChannel() {}
+	public function __construct() {}
 
 	public function __get($property) {
 		if (property_exists($this, $property)) {

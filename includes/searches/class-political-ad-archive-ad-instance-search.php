@@ -18,7 +18,7 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
     private $ad_cache = array();
 
-	public function PoliticalAdArchiveAdInstanceSearch() {
+	public function __construct() {
 		$this->posts_per_page = 3000;
 	}
 
@@ -67,7 +67,7 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
         if($this->start_time != null)
             $query_conditions[] = "end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($this->start_time)))."'";
-        
+
         if($this->end_time != null)
             $query_conditions[] = "start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
 
@@ -81,7 +81,7 @@ class PoliticalAdArchiveAdInstanceSearch implements PoliticalAdArchiveBufferedQu
 
         if($this->posts_per_page != -1)
             $query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
-        
+
         $results = $wpdb->get_results($query);
 	    $rows = array();
 	    foreach($results as $ad_instance) {

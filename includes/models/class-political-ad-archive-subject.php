@@ -12,7 +12,7 @@ class PoliticalAdArchiveSubject {
 
 	private $subject; // The string value of the type
 
-	public function PoliticalAdArchiveSubject() {}
+	public function __construct() {}
 
 	public function __get($property) {
 		if (property_exists($this, $property)) {

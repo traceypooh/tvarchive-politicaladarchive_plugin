@@ -35,7 +35,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	// filter cache stores the results of the filter (a list of post IDs)
 	private $_filter_cache = array();
 
-	public function PoliticalAdArchiveAdSearch($args = null) {
+	public function __construct($args = null) {
 		$this->posts_per_page = 500;
 	}
 

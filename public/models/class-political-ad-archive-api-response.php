@@ -16,7 +16,7 @@ class PoliticalAdArchiveApiResponse {
 	private $data; // The array of data to be included
 	private $format; // The format that the data should be printed as
 
-	public function PoliticalAdArchiveApiResponse($data, $format) {
+	public function __construct($data, $format) {
 		$this->data = $data;
 		$this->format = $format;
 	}
@@ -42,7 +42,7 @@ class PoliticalAdArchiveApiResponse {
 
 	/**
 	 * Sets header information based on the response
-	 * @return 
+	 * @return
 	 */
 	public function send_headers() {
 		switch($this->format) {
@@ -60,7 +60,7 @@ class PoliticalAdArchiveApiResponse {
 	public function send_body() {
 		// Depending on the type of data, send in chunks or all at once
 		// Currently this can only send arrays or buffered queries
-		
+
 		// Send the array
 		if(is_array($this->data)) {
 			$this->send_start($this->data);
@@ -143,7 +143,7 @@ class PoliticalAdArchiveApiResponse {
 	        case PoliticalAdArchiveApiResponse::FORMAT_CSV:
 	            // create a file pointer connected to the output stream
 	            $output = fopen('php://output', 'w');
-	            
+
 	            // loop over the rows, outputting them
                 foreach($rows as $row) {
 	                fputcsv($output, $row);

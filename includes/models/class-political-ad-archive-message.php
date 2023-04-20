@@ -12,7 +12,7 @@ class PoliticalAdArchiveMessage {
 
 	private $message; // The string value of the message
 
-	public function PoliticalAdArchiveMessage() {}
+	public function __construct() {}
 
 	public function __get($property) {
 		if (property_exists($this, $property)) {

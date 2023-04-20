@@ -38,7 +38,7 @@ class PoliticalAdArchiveAd {
     private $end_time;
 
 
-	public function PoliticalAdArchiveAd($wp_id) {
+	public function __construct($wp_id) {
                 $post_metadata = get_fields($wp_id);
                 $this->wp_id = $wp_id;
                 $this->embed_url = array_key_exists('embed_url', $post_metadata)?$post_metadata['embed_url']:'';
