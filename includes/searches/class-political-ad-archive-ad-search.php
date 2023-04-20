@@ -512,8 +512,10 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-	    $this->_filter_cache = $ids;
-	    return $ids;
+		error_log('get_filtered_ids() C count: ' . count($ids));
+
+	  $this->_filter_cache = $ids;
+	  return $ids;
 	}
 
 	private function generate_row($ad_id, $air_count) {
