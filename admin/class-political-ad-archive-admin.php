@@ -479,7 +479,7 @@ class PoliticalAdArchiveAdmin {
         error_log("Loading Candidates");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
-        $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
+        $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json'; // xxx "key does not have access to this method"
 
         // Load existing candidates
         $table_name = $wpdb->prefix . 'ad_candidates';
@@ -572,7 +572,7 @@ class PoliticalAdArchiveAdmin {
         error_log("Loading Sponsors");
         global $wpdb;
         $api_key = get_field('open_secrets_api_key', 'option');
-        $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json';
+        $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json'; // xxx "key does not have access to this method"
 
         // Load existing sponsors
         $table_name = $wpdb->prefix . 'ad_sponsors';
@@ -698,7 +698,7 @@ class PoliticalAdArchiveAdmin {
 
     private function get_network_lookup() {
         // Get a list of ad instances from the archive
-        $url = 'https://archive.org/tv.php?chan2market=1&output=json';
+        $url = 'https://archive.org/tv.php?chan2market=1&output=json'; // xxx
         $url_result = file_get_contents($url);
         $results = json_decode($url_result);
 

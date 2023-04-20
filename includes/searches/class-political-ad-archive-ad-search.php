@@ -83,7 +83,10 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 				'term' => $query_part,
 				'boolean' => $active_boolean
 			);
+
+			error_log("parse_filter: $query_part");
 		}
+
 		return $filter_array;
 	}
 
