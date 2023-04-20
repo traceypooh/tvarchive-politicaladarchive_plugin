@@ -113,7 +113,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		$query .= " FROM ".$posts_table."
 		       LEFT JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
 		           WHERE ".$posts_table.".post_status = 'publish'
-		             AND ".$posts_table.".ID IN (".implode(',', ((count((array)$this->filtered_ids))?$filtered_ids:array(-1))).")";
+		             AND ".$posts_table.".ID IN (".implode(',', ((count((array)$this->filtered_ids))?$filtered_ids:array(-1))).")"; // xxx
 
         // Instance filters
         $query_parts = array();
@@ -365,12 +365,14 @@ error_log("AAAS $query");
 			return $this->_filter_cache;
 
 		// Start off with all IDs
-		$ids = get_posts(array(
+		$ids = get_posts([
 			'fields' => 'ids',
 	        'post_status' => 'publish',
 	        'post_type'   => 'archive_political_ad',
 	        'numberposts' => -1
-	    ));
+	    ]);
+
+			error_log('get_filtered_ids() A count: ' . count($ids));
 
 	    // Run the additive filters
 	    if(count((array)$this->word_filters)) {
@@ -387,6 +389,8 @@ error_log("AAAS $query");
 		    	)
 	    	);
 	    }
+
+		error_log('get_filtered_ids() B count: ' . count($ids));
 
 		// Run the subtractive filters
 		if(count((array)$this->archive_id_filters)) {
