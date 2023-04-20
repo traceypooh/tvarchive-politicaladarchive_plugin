@@ -85,7 +85,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 			);
 		}
 		return $filter_array;
-	} 
+	}
 
 	public function get_total_rows() {
 		return $this->get_chunk(0, true);
@@ -146,6 +146,8 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
 	        if($this->per_page != -1)
 				$query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
+
+error_log("AAAS $query");
 
 	        $results = $wpdb->get_results($query);
 		    $rows = array();
@@ -247,7 +249,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         foreach($filters as $filter) {
             if($filter['term'] == "")
                 continue;
-            
+
             $subquery = "
 	             SELECT * from ".$meta_table."
 	    		   JOIN ".$sponsors_table." ON ".$sponsors_table.".name = ".$meta_table.".meta_value
@@ -292,7 +294,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         foreach($filters as $filter) {
             if($filter['term'] == "")
                 continue;
-            
+
             $subquery = "
 	             SELECT * from ".$instances_table."
 	    		  WHERE ".$instances_table.".".$field." LIKE '".($exact_match?"":"%").esc_sql($filter['term']).($exact_match?"":"%")."'
