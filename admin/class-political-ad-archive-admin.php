@@ -697,8 +697,8 @@ class PoliticalAdArchiveAdmin {
     }
 
     private function get_network_lookup() {
-        // Get a list of ad instances from the archive
-        $url = 'https://archive.org/tv.php?chan2market=1&output=json'; // xxx
+        // Get a list of channels and basic market info from the archive
+        $url = 'https://tvnix.archive.org/tv?chan2market';
         $url_result = file_get_contents($url);
         $results = json_decode($url_result);
 
