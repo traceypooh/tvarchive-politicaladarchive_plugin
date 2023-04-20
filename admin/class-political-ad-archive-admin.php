@@ -337,7 +337,7 @@ class PoliticalAdArchiveAdmin {
                         continue;
 
                     // Does this instance happen in a market we care about
-                    if(sizeof($market_overrides) > 0
+                    if(count((array)$this->market_overrides)
                     && !in_array($market, $market_overrides)) {
                         error_log("Skipped market mismatch: $network => $market");
                         continue;
@@ -389,7 +389,7 @@ class PoliticalAdArchiveAdmin {
                     $wpdb->query($query);
                 }
 
-                if(sizeof($market_overrides) > 0) {
+                if(count((array)$this->market_overrides)) {
                     $table_name = $wpdb->prefix . 'ad_instances';
                     $query = $wpdb->prepare('DELETE FROM %1$s WHERE market NOT IN ("'.implode('","', $market_overrides).'") && wp_identifier = %2$d', array($table_name, $wp_identifier));
                     $wpdb->query($query);

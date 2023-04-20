@@ -113,29 +113,29 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		$query .= " FROM ".$posts_table."
 		       LEFT JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
 		           WHERE ".$posts_table.".post_status = 'publish'
-		             AND ".$posts_table.".ID IN (".implode(((sizeof($filtered_ids) > 0)?$filtered_ids:array(-1)), ",").")";
+		             AND ".$posts_table.".ID IN (".implode(((count((array)$this->filtered_ids))?$filtered_ids:array(-1)), ",").")";
 
         // Instance filters
         $query_parts = array();
-        if(sizeof($this->market_filters) > 0)
+        if(count((array)$this->market_filters))
             $query_parts[] = $this->generate_instance_filter_query_part($this->market_filters, "market");
-        if(sizeof($this->channel_filters) > 0)
+        if(count((array)$this->channel_filters))
             $query_parts[] = $this->generate_instance_filter_query_part($this->channel_filters, "network");
-        if(sizeof($this->program_filters) > 0)
+        if(count((array)$this->program_filters))
             $query_parts[] = $this->generate_instance_filter_query_part($this->program_filters, "program");
 		if($this->start_time)
 			$query_parts[] = $instances_table.".end_time > '".esc_sql(date('Y-m-d H:i:s',strtotime($this->start_time)))."'";
 		if($this->end_time)
 			$query_parts[] = $instances_table.".start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
 
-        if(sizeof($query_parts) > 0)
+        if(count((array)$this->query_parts))
             $query .= " AND ".implode($query_parts, " AND ");
 
         // Are we gtting results or pages
         if(!$get_count) {
 
 			// Do we only want specific pages
-			if(sizeof($this->pages) > 0) {
+			if(count((array)$this->pages)) {
 				if(!(array_key_exists($page, $this->pages)))
 					return array();
 				$page = $this->pages[$page];
@@ -188,11 +188,11 @@ error_log("AAAS $query");
         }
 
         $subquery .= "(";
-        if(sizeof($and_parts) > 0)
+        if(count((array)$this->and_parts))
             $subquery .= "(".implode($and_parts, " AND ").")";
         else
             $subquery .= "false";
-        if(sizeof($or_parts) > 0)
+        if(count((array)$this->or_parts))
             $subquery .= " OR (".implode($or_parts, " OR ").")";
         $subquery .= ")";
         return $subquery;
@@ -227,8 +227,8 @@ error_log("AAAS $query");
             }
         }
 
-        $or_clause = sizeof($or_parts)>0?implode(") OR (", $or_parts):"true";
-        $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
+        $or_clause = count((array)$this->or_parts)?implode(") OR (", $or_parts):"true";
+        $and_clause = count((array)$this->and_parts)?implode(") AND (", $and_parts):"true";
         $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.") AND (".$and_clause."))";
@@ -273,8 +273,8 @@ error_log("AAAS $query");
             }
         }
 
-        $or_clause = sizeof($or_parts)>0?implode(") OR (", $or_parts):"true";
-        $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
+        $or_clause = count((array)$this->or_parts)?implode(") OR (", $or_parts):"true";
+        $and_clause = count((array)$this->and_parts)?implode(") AND (", $and_parts):"true";
         $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.") AND (".$and_clause."))";
@@ -316,8 +316,8 @@ error_log("AAAS $query");
             }
         }
 
-        $or_clause = sizeof($or_parts)>0?implode(") OR (", $or_parts):"true";
-        $and_clause = sizeof($and_parts)>0?implode(") AND (", $and_parts):"true";
+        $or_clause = count((array)$this->or_parts)?implode(") OR (", $or_parts):"true";
+        $and_clause = count((array)$this->and_parts)?implode(") AND (", $and_parts):"true";
         $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.")
@@ -373,7 +373,7 @@ error_log("AAAS $query");
 	    ));
 
 	    // Run the additive filters
-	    if(sizeof($this->word_filters) > 0) {
+	    if(count((array)$this->word_filters)) {
 	    	$ids = array_unique(
 	    		array_merge(
 		    		$this->run_meta_filter($this->word_filters,'ad_candidates_%_ad_candidate'),
@@ -389,7 +389,7 @@ error_log("AAAS $query");
 	    }
 
 		// Run the subtractive filters
-		if(sizeof($this->archive_id_filters) > 0) {
+		if(count((array)$this->archive_id_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->archive_id_filters,
 				'archive_id'
@@ -397,7 +397,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 	    }
 
-		if(sizeof($this->candidate_filters) > 0) {
+		if(count((array)$this->candidate_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->candidate_filters,
 				'ad_candidates_%_ad_candidate'
@@ -405,7 +405,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 	    }
 
-		if(sizeof($this->sponsor_filters) > 0) {
+		if(count((array)$this->sponsor_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->sponsor_filters,
 				'ad_sponsors_%ad_sponsor'
@@ -413,7 +413,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->sponsor_type_filters) > 0) {
+		if(count((array)$this->sponsor_type_filters)) {
 			$filtered_ids = $this->run_sponsor_filter(
 				$this->sponsor_type_filters,
 				"type",
@@ -422,7 +422,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->subject_filters) > 0) {
+		if(count((array)$this->subject_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->subject_filters,
 				'ad_subjects_%_ad_subject'
@@ -430,7 +430,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->message_filters) > 0) {
+		if (count((array)$this->message_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->message_filters,
 				'ad_message',
@@ -439,7 +439,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->type_filters) > 0) {
+		if(count((array)$this->type_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->type_filters,
 				'ad_type',
@@ -448,7 +448,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->archive_id_filters) > 0) {
+		if(count((array)$this->archive_id_filters)) {
 			$filtered_ids = $this->run_meta_filter(
 				$this->archive_id_filters,
 				'archive_id',
@@ -457,7 +457,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->network_filters) > 0) {
+		if(count((array)$this->network_filters)) {
 			$filtered_ids = $this->run_instance_filter(
 				$this->network_filters,
 				'network',
@@ -466,7 +466,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->market_filters) > 0) {
+		if(count((array)$this->market_filters)) {
 			$filtered_ids = $this->run_instance_filter(
 				$this->market_filters,
 				'market',
@@ -475,7 +475,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->location_filters) > 0) {
+		if(count((array)$this->location_filters)) {
 			$filtered_ids = $this->run_instance_filter(
 				$this->location_filters,
 				'location'
@@ -483,7 +483,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->program_filters) > 0) {
+		if(count((array)$this->program_filters)) {
 			$filtered_ids = $this->run_instance_filter(
 				$this->program_filters,
 				'program'
@@ -491,7 +491,7 @@ error_log("AAAS $query");
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
 
-		if(sizeof($this->program_type_filters) > 0) {
+		if(count((array)$this->program_type_filters)) {
 			$filtered_ids = $this->run_instance_filter(
 				$this->program_type_filters,
 				'program_type',
