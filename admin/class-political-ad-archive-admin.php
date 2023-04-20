@@ -339,7 +339,7 @@ class PoliticalAdArchiveAdmin {
                     // Does this instance happen in a market we care about
                     if(sizeof($market_overrides) > 0
                     && !in_array($market, $market_overrides)) {
-                        error_log("Skipped market mismatch: in ".$market);
+                        error_log("Skipped market mismatch: $network => $market");
                         continue;
                     }
 
