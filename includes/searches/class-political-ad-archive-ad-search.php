@@ -113,7 +113,11 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		$query .= " FROM ".$posts_table."
 		       LEFT JOIN ".$instances_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
 		           WHERE ".$posts_table.".post_status = 'publish'
-		             AND ".$posts_table.".ID IN (".implode(',', ((count((array)$this->filtered_ids))?$filtered_ids:array(-1))).")"; // xxx
+		             AND ".$posts_table.".ID IN (" .
+ 								implode(
+									',',
+									(count((array)$filtered_ids) ? $filtered_ids : [-1]) // xxx
+								).")";
 
         // Instance filters
         $query_parts = array();
@@ -128,7 +132,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 		if($this->end_time)
 			$query_parts[] = $instances_table.".start_time < '".esc_sql(date('Y-m-d H:i:s',strtotime($this->end_time)))."'";
 
-        if(count((array)$this->query_parts))
+        if(count((array)$query_parts))
             $query .= " AND ".implode(' AND ', $query_parts);
 
         // Are we gtting results or pages
@@ -188,11 +192,11 @@ error_log("AAAS $query");
         }
 
         $subquery .= "(";
-        if(count((array)$this->and_parts))
+        if(count((array)$and_parts))
             $subquery .= "(".implode(' AND ', $and_parts).")";
         else
             $subquery .= "false";
-        if(count((array)$this->or_parts))
+        if(count((array)$or_parts))
             $subquery .= " OR (".implode(' OR ', $or_parts).")";
         $subquery .= ")";
         return $subquery;
@@ -227,8 +231,8 @@ error_log("AAAS $query");
             }
         }
 
-        $or_clause = count((array)$this->or_parts)?implode(") OR (", $or_parts):"true";
-        $and_clause = count((array)$this->and_parts)?implode(") AND (", $and_parts):"true";
+        $or_clause = count((array)$or_parts)?implode(") OR (", $or_parts):"true";
+        $and_clause = count((array)$and_parts)?implode(") AND (", $and_parts):"true";
         $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.") AND (".$and_clause."))";
@@ -273,8 +277,8 @@ error_log("AAAS $query");
             }
         }
 
-        $or_clause = count((array)$this->or_parts)?implode(") OR (", $or_parts):"true";
-        $and_clause = count((array)$this->and_parts)?implode(") AND (", $and_parts):"true";
+        $or_clause = count((array)$or_parts)?implode(") OR (", $or_parts):"true";
+        $and_clause = count((array)$and_parts)?implode(") AND (", $and_parts):"true";
         $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.") AND (".$and_clause."))";
@@ -316,8 +320,8 @@ error_log("AAAS $query");
             }
         }
 
-        $or_clause = count((array)$this->or_parts)?implode(") OR (", $or_parts):"true";
-        $and_clause = count((array)$this->and_parts)?implode(") AND (", $and_parts):"true";
+        $or_clause = count((array)$or_parts)?implode(") OR (", $or_parts):"true";
+        $and_clause = count((array)$and_parts)?implode(") AND (", $and_parts):"true";
         $query = "SELECT DISTINCT ID
                     FROM ".$posts_table."
                    WHERE ((".$or_clause.")
