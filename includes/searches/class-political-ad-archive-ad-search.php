@@ -83,8 +83,6 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 				'term' => $query_part,
 				'boolean' => $active_boolean
 			);
-
-			error_log("parse_filter: $query_part");
 		}
 
 		return $filter_array;
@@ -154,10 +152,8 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 	        if($this->per_page != -1)
 				$query .= " LIMIT ".($page * $this->posts_per_page).", ".$this->posts_per_page;
 
-error_log("AAAS $query");
-
-	        $results = $wpdb->get_results($query);
-		    $rows = array();
+        $results = $wpdb->get_results($query);
+		    $rows = [];
 		    foreach($results as $result) {
 		    	$ad_id = $result->post_id;
 		    	$air_count = $result->air_count;
@@ -376,8 +372,6 @@ error_log("AAAS $query");
 	        'numberposts' => -1
 	    ]);
 
-			error_log('get_filtered_ids() A count: ' . count($ids));
-
 	    // Run the additive filters
 	    if(count((array)$this->word_filters)) {
 	    	$ids = array_unique(
@@ -393,8 +387,6 @@ error_log("AAAS $query");
 		    	)
 	    	);
 	    }
-
-		error_log('get_filtered_ids() B count: ' . count($ids));
 
 		// Run the subtractive filters
 		if(count((array)$this->archive_id_filters)) {
@@ -515,8 +507,6 @@ error_log("AAAS $query");
 			);
 		    $ids = array_intersect($ids, $filtered_ids);
 		}
-
-		error_log('get_filtered_ids() C count: ' . count($ids));
 
 	  $this->_filter_cache = $ids;
 	  return $ids;
