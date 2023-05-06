@@ -38,51 +38,51 @@ class PoliticalAdArchivePublic {
      * @param      string    $plugin_name       The name of the plugin.
      * @param      string    $version    The version of this plugin.
      */
-    public function __construct( $plugin_name, $version ) {
+  public function __construct($plugin_name, $version) {
 
-        $this->plugin_name = $plugin_name;
-        $this->version = $version;
+      $this->plugin_name = $plugin_name;
+      $this->version = $version;
 
-    }
+  }
 
-    public function register_api_routes() {
+  public function register_api_routes() {
 
-        // Go through all the API routes
-        PoliticalAdArchiveApiGetAds::register_route();
-        PoliticalAdArchiveApiGetAdInstances::register_route();
-        PoliticalAdArchiveApiGetMarketCounts::register_route();
-        PoliticalAdArchiveApiGetCandidates::register_route();
-        PoliticalAdArchiveApiGetSponsors::register_route();
-    }
+      // Go through all the API routes
+      PoliticalAdArchiveApiGetAds::register_route();
+      PoliticalAdArchiveApiGetAdInstances::register_route();
+      PoliticalAdArchiveApiGetMarketCounts::register_route();
+      PoliticalAdArchiveApiGetCandidates::register_route();
+      PoliticalAdArchiveApiGetSponsors::register_route();
+  }
 
-    public function filter_api_query_vars( $query_vars ) {
+  public function filter_api_query_vars($query_vars) {
 
-        // Go through all the API filters
-        $query_vars = PoliticalAdArchiveApiGetAds::filter_query_vars($query_vars);
-        $query_vars = PoliticalAdArchiveApiGetAdInstances::filter_query_vars($query_vars);
-        $query_vars = PoliticalAdArchiveApiGetMarketCounts::filter_query_vars($query_vars);
-        $query_vars = PoliticalAdArchiveApiGetCandidates::filter_query_vars($query_vars);
-        $query_vars = PoliticalAdArchiveApiGetSponsors::filter_query_vars($query_vars);
+      // Go through all the API filters
+      $query_vars = PoliticalAdArchiveApiGetAds::filter_query_vars($query_vars);
+      $query_vars = PoliticalAdArchiveApiGetAdInstances::filter_query_vars($query_vars);
+      $query_vars = PoliticalAdArchiveApiGetMarketCounts::filter_query_vars($query_vars);
+      $query_vars = PoliticalAdArchiveApiGetCandidates::filter_query_vars($query_vars);
+      $query_vars = PoliticalAdArchiveApiGetSponsors::filter_query_vars($query_vars);
 
-        return $query_vars;
-    }
+      return $query_vars;
+  }
 
-    public function parse_request( &$wp ) {
+  public function parse_request(&$wp) {
 
-        // Go through all the API parsers
-        PoliticalAdArchiveApiGetAds::parse_request($wp);
-        PoliticalAdArchiveApiGetAdInstances::parse_request($wp);
-        PoliticalAdArchiveApiGetMarketCounts::parse_request($wp);
-        PoliticalAdArchiveApiGetCandidates::parse_request($wp);
-        PoliticalAdArchiveApiGetSponsors::parse_request($wp);
-    }
+      // Go through all the API parsers
+      PoliticalAdArchiveApiGetAds::parse_request($wp);
+      PoliticalAdArchiveApiGetAdInstances::parse_request($wp);
+      PoliticalAdArchiveApiGetMarketCounts::parse_request($wp);
+      PoliticalAdArchiveApiGetCandidates::parse_request($wp);
+      PoliticalAdArchiveApiGetSponsors::parse_request($wp);
+  }
 
-    public function enqueue_styles () {
-        // This is handled by the loader
-    }
-    public function enqueue_scripts () {
-        // This is handled by the loader
-    }
+  public function enqueue_styles () {
+      // This is handled by the loader
+  }
+  public function enqueue_scripts () {
+      // This is handled by the loader
+  }
 
 }
 ?>

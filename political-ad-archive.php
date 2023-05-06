@@ -21,7 +21,7 @@
  */
 
 // If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
+if (! defined('WPINC')) {
     die;
 }
 
@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
  * This action is documented in includes/class-political-ad-archive-activator.php
  */
 function activate_political_ad_archive() {
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-political-ad-archive-activator.php';
+    require_once plugin_dir_path(__FILE__) . 'includes/class-political-ad-archive-activator.php';
     PoliticalAdArchiveActivator::activate();
 }
 
@@ -39,18 +39,18 @@ function activate_political_ad_archive() {
  * This action is documented in includes/class-political-ad-archive-deactivator.php
  */
 function deactivate_political_ad_archive() {
-    require_once plugin_dir_path( __FILE__ ) . 'includes/class-political-ad-archive-deactivator.php';
+    require_once plugin_dir_path(__FILE__) . 'includes/class-political-ad-archive-deactivator.php';
     PoliticalAdArchiveDeactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_political_ad_archive' );
-register_deactivation_hook( __FILE__, 'deactivate_political_ad_archive' );
+register_activation_hook(__FILE__, 'activate_political_ad_archive');
+register_deactivation_hook(__FILE__, 'deactivate_political_ad_archive');
 
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'includes/class-political-ad-archive.php';
+require plugin_dir_path(__FILE__) . 'includes/class-political-ad-archive.php';
 
 /**
  * Begins execution of the plugin.

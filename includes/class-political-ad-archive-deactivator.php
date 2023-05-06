@@ -18,16 +18,16 @@ class PoliticalAdArchiveDeactivator {
      *
      * @since    1.0.0
      */
-    public static function deactivate() {
-        PoliticalAdArchiveDeactivator::deactivate_archive_sync();
-    }
+  public static function deactivate() {
+      PoliticalAdArchiveDeactivator::deactivate_archive_sync();
+  }
 
-    private static function deactivate_archive_sync() {
-        // Does the scheduled task exist already?
-        $schedule = wp_get_schedule('archive_sync') === false;
-        if($schedule) {
-            wp_unschedule_event(wp_next_scheduled('archive_sync'), 'archive_sync');
-        }
+  private static function deactivate_archive_sync() {
+      // Does the scheduled task exist already?
+      $schedule = wp_get_schedule('archive_sync') === false;
+    if ($schedule) {
+        wp_unschedule_event(wp_next_scheduled('archive_sync'), 'archive_sync');
     }
+  }
 
 }

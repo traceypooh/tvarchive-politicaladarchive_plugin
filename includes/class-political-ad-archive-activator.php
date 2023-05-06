@@ -17,27 +17,27 @@ class PoliticalAdArchiveActivator {
      *
      * @since    1.0.0
      */
-    public static function activate() {
-        PoliticalAdArchiveActivator::create_ad_instances_table();
-        PoliticalAdArchiveActivator::create_ad_candidates_table();
-        PoliticalAdArchiveActivator::create_ad_sponsors_table();
-        PoliticalAdArchiveActivator::activate_archive_sync();
-    }
+  public static function activate() {
+      PoliticalAdArchiveActivator::create_ad_instances_table();
+      PoliticalAdArchiveActivator::create_ad_candidates_table();
+      PoliticalAdArchiveActivator::create_ad_sponsors_table();
+      PoliticalAdArchiveActivator::activate_archive_sync();
+  }
 
     /**
      * Register the custom table that will store information about ad airings
      */
-    private static function create_ad_instances_table() {
-        global $wpdb;
-        global $ad_db_version;
-        // Wordpress doesn't load upgrade.php by default
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+  private static function create_ad_instances_table() {
+      global $wpdb;
+      global $ad_db_version;
+      // Wordpress doesn't load upgrade.php by default
+      require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-        // Create the ad instances data table
-        $table_name = $wpdb->prefix . 'ad_instances';
+      // Create the ad instances data table
+      $table_name = $wpdb->prefix . 'ad_instances';
 
-        $charset_collate = $wpdb->get_charset_collate();
-        $sql = "CREATE TABLE $table_name (
+      $charset_collate = $wpdb->get_charset_collate();
+      $sql = "CREATE TABLE $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             wp_identifier mediumint(9) NOT NULL,
             archive_identifier varchar(100) NOT NULL,
@@ -57,20 +57,20 @@ class PoliticalAdArchiveActivator {
             KEY program_key (program),
             KEY program_type_key (program_type)
         ) $charset_collate;";
-        dbDelta( $sql );
-    }
+      dbDelta($sql);
+  }
 
-    private static function create_ad_candidates_table() {
-        global $wpdb;
-        global $ad_db_version;
-        // Wordpress doesn't load upgrade.php by default
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+  private static function create_ad_candidates_table() {
+      global $wpdb;
+      global $ad_db_version;
+      // Wordpress doesn't load upgrade.php by default
+      require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-        // Create the ad instances data table
-        $table_name = $wpdb->prefix . 'ad_candidates';
+      // Create the ad instances data table
+      $table_name = $wpdb->prefix . 'ad_candidates';
 
-        $charset_collate = $wpdb->get_charset_collate();
-        $sql = "CREATE TABLE $table_name (
+      $charset_collate = $wpdb->get_charset_collate();
+      $sql = "CREATE TABLE $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             crp_unique_id varchar(100) NOT NULL,
             name varchar(128),
@@ -86,20 +86,20 @@ class PoliticalAdArchiveActivator {
             KEY affiliation_key (affiliation),
             KEY air_count_key (air_count)
         ) $charset_collate;";
-        dbDelta( $sql );
-    }
+      dbDelta($sql);
+  }
 
-    private static function create_ad_sponsors_table() {
-        global $wpdb;
-        global $ad_db_version;
-        // Wordpress doesn't load upgrade.php by default
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+  private static function create_ad_sponsors_table() {
+      global $wpdb;
+      global $ad_db_version;
+      // Wordpress doesn't load upgrade.php by default
+      require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-        // Create the ad instances data table
-        $table_name = $wpdb->prefix . 'ad_sponsors';
+      // Create the ad instances data table
+      $table_name = $wpdb->prefix . 'ad_sponsors';
 
-        $charset_collate = $wpdb->get_charset_collate();
-        $sql = "CREATE TABLE $table_name (
+      $charset_collate = $wpdb->get_charset_collate();
+      $sql = "CREATE TABLE $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             crp_unique_id varchar(100) NOT NULL,
             name varchar(128),
@@ -118,17 +118,17 @@ class PoliticalAdArchiveActivator {
             KEY race_key (race),
             KEY air_count_key (air_count)
         ) $charset_collate;";
-        dbDelta( $sql );
-    }
+      dbDelta($sql);
+  }
 
     /**
      * Begin regular ad data synchronization with the Internet Archive
      */
-    private static function activate_archive_sync() {
-        // Does the scheduled task exist already?
-        if(wp_get_schedule('archive_sync') === false) {
-            wp_schedule_event(time(), 'hourly', 'archive_sync');
-        }
+  private static function activate_archive_sync() {
+      // Does the scheduled task exist already?
+    if (wp_get_schedule('archive_sync') === false) {
+        wp_schedule_event(time(), 'hourly', 'archive_sync');
     }
+  }
 
 }

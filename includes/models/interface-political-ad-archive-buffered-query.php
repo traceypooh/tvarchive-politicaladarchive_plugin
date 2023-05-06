@@ -9,5 +9,5 @@
  * @author     Daniel Schultz <dan.schultz@archive.org>
  */
 interface PoliticalAdArchiveBufferedQuery {
-	public function get_chunk($page);
+  public function get_chunk($page);
 }

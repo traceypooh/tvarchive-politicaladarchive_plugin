@@ -10,31 +10,31 @@
  */
 class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQuery {
 
-	private $posts_per_page;
+    private $posts_per_page;
 
-	public function __construct($args = null) {
+  public function __construct($args = null) {
 
-	}
+  }
 
-	public function __get($property) {
-		if (property_exists($this, $property)) {
-			return $this->$property;
-		}
-	}
+  public function __get($property) {
+    if (property_exists($this, $property)) {
+        return $this->$property;
+    }
+  }
 
-	public function __set($property, $value) {
-		if (property_exists($this, $property)) {
-			$this->$property = $value;
-		}
+  public function __set($property, $value) {
+    if (property_exists($this, $property)) {
+        $this->$property = $value;
+    }
 
-		return $this;
-	}
+      return $this;
+  }
 
   public function get_total_rows() {
       return -1;
   }
 
-	public function get_chunk($page) {
+  public function get_chunk($page) {
 
     global $wpdb;
     $postmeta_table = $wpdb->prefix . 'postmeta';
@@ -52,30 +52,30 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
             ORDER BY ad_count DESC";
     $results = $wpdb->get_results($query);
     $rows = array();
-    foreach($results as $candidate_result) {
-    	$rows[] = $this->generate_row($candidate_result->id);
+    foreach ($results as $candidate_result) {
+        $rows[] = $this->generate_row($candidate_result->id);
     }
-    if ($page < 1){
+    if ($page < 1) {
       return $rows;
     }
 
-	}
+  }
 
-	private function generate_row($candidate_id) {
+  private function generate_row($candidate_id) {
     $candidate = new PoliticalAdArchiveCandidate($candidate_id);
     // Create the row
     $parsed_row = [
-      'id' => $candidate->id,
-      'crp_unique_id' => $candidate->crp_unique_id,
-      'name' => $candidate->name,
-      'race' => $candidate->race,
-      'cycle' => $candidate->cycle,
-      'affiliation' => $candidate->affiliation,
-      'ad_count' => $candidate->ad_count,
-      'air_count' => $candidate->air_count,
-      'date_created' => $candidate->date_created,
-      'in_crp' => $candidate->in_crp
+    'id' => $candidate->id,
+    'crp_unique_id' => $candidate->crp_unique_id,
+    'name' => $candidate->name,
+    'race' => $candidate->race,
+    'cycle' => $candidate->cycle,
+    'affiliation' => $candidate->affiliation,
+    'ad_count' => $candidate->ad_count,
+    'air_count' => $candidate->air_count,
+    'date_created' => $candidate->date_created,
+    'in_crp' => $candidate->in_crp
     ];
     return $parsed_row;
-	}
+  }
 }
