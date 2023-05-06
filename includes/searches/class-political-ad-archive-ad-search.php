@@ -33,7 +33,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
     private $end_time;
 
     // filter cache stores the results of the filter (a list of post IDs)
-    private $_filter_cache = array();
+    private $filter_cache = array();
 
   public function __construct($args = null) {
       $this->posts_per_page = 500;
@@ -134,7 +134,6 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
       // Are we gtting results or pages
     if (!$get_count) {
-
         // Do we only want specific pages
       if (count((array)$this->pages)) {
         if (!(array_key_exists($page, $this->pages)))
@@ -162,7 +161,6 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         $result = $wpdb->get_row($query);
         return $result->row_count;
     }
-
   }
 
   private function generate_instance_filter_query_part($filters, $field) {
@@ -358,8 +356,8 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
 
   public function get_filtered_ids() {
       // Return the cached values if they exist
-      if ($this->_filter_cache != null)
-          return $this->_filter_cache;
+      if ($this->filter_cache != null)
+          return $this->filter_cache;
 
       // Start off with all IDs
       $ids = get_posts([
@@ -505,7 +503,7 @@ class PoliticalAdArchiveAdSearch implements PoliticalAdArchiveBufferedQuery {
         $ids = array_intersect($ids, $filtered_ids);
     }
 
-      $this->_filter_cache = $ids;
+      $this->filter_cache = $ids;
       return $ids;
   }
 

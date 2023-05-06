@@ -15,7 +15,6 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
   private $end_time;
 
   public function __construct($args = null) {
-
   }
 
   public function __get($property) {

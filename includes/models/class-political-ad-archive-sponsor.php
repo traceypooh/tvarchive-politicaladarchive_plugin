@@ -23,7 +23,8 @@ class PoliticalAdArchiveSponsor {
     private $date_created; // The date this record was created in this system
     private $in_crp; // Is this item in the CRP database or not
 
-  public function __construct() {}
+  public function __construct() {
+  }
 
   public function __get($property) {
     if (property_exists($this, $property)) {
@@ -190,5 +191,4 @@ class PoliticalAdArchiveSponsor {
     }
       return $sponsors;
   }
-
 }

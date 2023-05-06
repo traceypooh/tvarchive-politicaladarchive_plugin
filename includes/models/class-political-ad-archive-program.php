@@ -13,7 +13,8 @@ class PoliticalAdArchiveProgram {
     private $program; // The name of the program
     private $program_type; // The type of the program
 
-  public function __construct() {}
+  public function __construct() {
+  }
 
   public function __get($property) {
     if (property_exists($this, $property)) {
@@ -57,5 +58,4 @@ class PoliticalAdArchiveProgram {
 
       return $programs;
   }
-
 }

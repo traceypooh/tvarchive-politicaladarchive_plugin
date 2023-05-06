@@ -207,5 +207,4 @@ class PoliticalAdArchiveCandidate {
     }
       return self::get_candidates_by_names($candidate_names);
   }
-
 }

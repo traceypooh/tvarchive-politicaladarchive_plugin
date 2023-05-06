@@ -12,7 +12,8 @@ class PoliticalAdArchiveSponsorType {
 
     private $type; // The string value of the type
 
-  public function __construct() {}
+  public function __construct() {
+  }
 
   public function __get($property) {
     if (property_exists($this, $property)) {

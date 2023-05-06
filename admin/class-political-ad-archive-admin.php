@@ -42,7 +42,6 @@ class PoliticalAdArchiveAdmin {
 
       $this->plugin_name = $plugin_name;
       $this->version = $version;
-
   }
 
   public function verify_acf_pro_enabled() {
@@ -116,7 +115,6 @@ class PoliticalAdArchiveAdmin {
 
       // STEP 1.2: Go through the list and make sure there is a "post" for each ad
     foreach ($canonical_ads as $canonical_ad) {
-
         $ad_identifier = $canonical_ad->identifier;
         // Does the ad already exist?
         $existing_ad = get_page_by_title($ad_identifier, OBJECT, 'archive_political_ad');
@@ -211,7 +209,6 @@ class PoliticalAdArchiveAdmin {
         if (property_exists($metadata, 'candidate') // xxx went missing from API
           && is_array($metadata->candidate)) {
           foreach ($metadata->candidate as $candidate) {
-
               // Look up the race / cycle information
             if ($race == "") {
               $candidate_object = PoliticalAdArchiveCandidate::get_candidate_by_name($candidate);
@@ -394,7 +391,6 @@ class PoliticalAdArchiveAdmin {
             $query = $wpdb->prepare('DELETE FROM %1$s WHERE market NOT IN ("'.implode('","', $market_overrides).'") && wp_identifier = %2$d', array($table_name, $wp_identifier));
             $wpdb->query($query);
         }
-
       } catch (Exception $e) {
           error_log($e);
       }
@@ -468,7 +464,6 @@ class PoliticalAdArchiveAdmin {
         $wpdb->query($query);
     }
       error_log("Finished Updating Counts");
-
   }
 
   public function load_candidates() {
@@ -670,7 +665,6 @@ class PoliticalAdArchiveAdmin {
             // Add the ID to prevent double creation if there's a dupe in one session
             $existing_candidates[$crp_unique_id] = $wpdb->insert_id;
         }
-
     }
   }
 
@@ -905,4 +899,3 @@ class PoliticalAdArchiveAdmin {
       return $air_metadata;
   }
 }
-?>

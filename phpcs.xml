@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <!-- run with `brew install php-code-sniffer`, then `phpcs` -->
 <ruleset name="petabox">
+  <exclude-pattern>*\.(css|js)$</exclude-pattern>
+
   <!-- start with PSR-2 as baseline -->
   <rule ref="PSR2">
 

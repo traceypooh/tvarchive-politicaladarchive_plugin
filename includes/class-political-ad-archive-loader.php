@@ -41,7 +41,6 @@ class PoliticalAdArchiveLoader {
 
       $this->actions = array();
       $this->filters = array();
-
   }
 
     /**
@@ -97,7 +96,6 @@ class PoliticalAdArchiveLoader {
       );
 
       return $hooks;
-
   }
 
     /**
@@ -114,7 +112,5 @@ class PoliticalAdArchiveLoader {
     foreach ($this->actions as $hook) {
         add_action($hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args']);
     }
-
   }
-
 }

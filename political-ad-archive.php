@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable PSR1.Files.SideEffects
 
 /**
  * The Political Ad Archive
@@ -65,8 +66,5 @@ function run_political_ad_archive() {
 
     $plugin = new PoliticalAdArchive();
     $plugin->run();
-
 }
 run_political_ad_archive();
-
-?>

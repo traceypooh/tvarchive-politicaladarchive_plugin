@@ -59,7 +59,6 @@ class PoliticalAdArchive {
       $this->define_general_hooks();
       $this->define_admin_hooks();
       $this->define_public_hooks();
-
   }
 
     /**
@@ -139,7 +138,6 @@ class PoliticalAdArchive {
       require_once plugin_dir_path(dirname(__FILE__)) . 'public/api/class-political-ad-archive-api-get-sponsors.php';
 
       $this->loader = new PoliticalAdArchiveLoader();
-
   }
 
     /**
@@ -170,7 +168,6 @@ class PoliticalAdArchive {
 
       // Set up admin interface hooks
       $this->loader->add_action('admin_notices', $plugin_admin, 'check_ad_metadata');
-
   }
 
     /**
@@ -190,7 +187,6 @@ class PoliticalAdArchive {
       $this->loader->add_action('init', $plugin_public, 'register_api_routes');
       $this->loader->add_filter('query_vars', $plugin_public, 'filter_api_query_vars');
       $this->loader->add_action('parse_request', $plugin_public, 'parse_request');
-
   }
 
     /**
@@ -204,7 +200,6 @@ class PoliticalAdArchive {
       $plugin_general = new PoliticalAdArchiveGeneral($this->get_plugin_name(), $this->get_version());
 
       $this->loader->add_action('init', $plugin_general, 'register_archive_political_ad_type');
-
   }
 
     /**
@@ -246,5 +241,4 @@ class PoliticalAdArchive {
   public function get_version() {
       return $this->version;
   }
-
 }

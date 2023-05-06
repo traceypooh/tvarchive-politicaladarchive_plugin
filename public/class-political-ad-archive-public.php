@@ -42,7 +42,6 @@ class PoliticalAdArchivePublic {
 
       $this->plugin_name = $plugin_name;
       $this->version = $version;
-
   }
 
   public function register_api_routes() {
@@ -77,12 +76,10 @@ class PoliticalAdArchivePublic {
       PoliticalAdArchiveApiGetSponsors::parse_request($wp);
   }
 
-  public function enqueue_styles () {
+  public function enqueue_styles() {
       // This is handled by the loader
   }
-  public function enqueue_scripts () {
+  public function enqueue_scripts() {
       // This is handled by the loader
   }
-
 }
-?>

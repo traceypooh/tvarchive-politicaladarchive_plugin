@@ -34,5 +34,4 @@ class PoliticalAdArchiveApiGetCandidates {
       exit();
     }
   }
-
 }

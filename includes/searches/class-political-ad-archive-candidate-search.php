@@ -13,7 +13,6 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
     private $posts_per_page;
 
   public function __construct($args = null) {
-
   }
 
   public function __get($property) {
@@ -58,7 +57,6 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
     if ($page < 1) {
       return $rows;
     }
-
   }
 
   private function generate_row($candidate_id) {

@@ -47,20 +47,32 @@ class PoliticalAdArchiveAd {
               $ad_sponsors_acf_value = array_key_exists('ad_sponsors', $post_metadata) ? $post_metadata['ad_sponsors'] : array();
               $ad_sponsors_acf_value = $ad_sponsors_acf_value ? $ad_sponsors_acf_value : array();
               $this->sponsors = PoliticalAdArchiveSponsor::get_sponsors_by_acf_field_value($ad_sponsors_acf_value);
-              $this->sponsor_names = array_map(function($x) { return $x->name; }, $this->sponsors);
+              $this->sponsor_names = array_map(function ($x) {
+                return $x->name;
+              }, $this->sponsors);
               $this->sponsor_names = array_unique($this->sponsor_names);
-              $this->sponsor_types = array_map(function($x) { return PoliticalAdArchiveSponsorType::get_friendly_sponsor_type_name($x->type); }, $this->sponsors);
+              $this->sponsor_types = array_map(function ($x) {
+                return PoliticalAdArchiveSponsorType::get_friendly_sponsor_type_name($x->type);
+              }, $this->sponsors);
               $this->sponsor_types = array_unique($this->sponsor_types);
               $this->sponsor_types = sizeof($this->sponsor_types) > 1 ? array("Multiple") : $this->sponsor_types;
-              $this->sponsor_affiliations = array_map(function($x) { return $x->single_ad_candidate_id; }, $this->sponsors);
-              $this->sponsor_affiliation_types = array_map(function($x) { return $x->does_support_candidate; }, $this->sponsors);
+              $this->sponsor_affiliations = array_map(function ($x) {
+                return $x->single_ad_candidate_id;
+              }, $this->sponsors);
+              $this->sponsor_affiliation_types = array_map(function ($x) {
+                return $x->does_support_candidate;
+              }, $this->sponsors);
               $ad_candidates_acf_value = array_key_exists('ad_candidates', $post_metadata) ? $post_metadata['ad_candidates'] : array();
               $ad_candidates_acf_value = $ad_candidates_acf_value ? $ad_candidates_acf_value : array();
               $this->candidates = PoliticalAdArchiveCandidate::get_candidates_by_acf_field_value($ad_candidates_acf_value);
-              $this->candidate_names = array_map(function($x) { return $x->name; }, $this->candidates);
+              $this->candidate_names = array_map(function ($x) {
+                return $x->name;
+              }, $this->candidates);
               $ad_subjects_acf_value = array_key_exists('ad_subjects', $post_metadata) ? $post_metadata['ad_subjects'] : array();
               $ad_subjects_acf_value = $ad_subjects_acf_value ? $ad_subjects_acf_value : array();
-              $this->subjects = array_map(function($x) { return $x['ad_subject']; }, $ad_subjects_acf_value);
+              $this->subjects = array_map(function ($x) {
+                return $x['ad_subject'];
+              }, $ad_subjects_acf_value);
               $this->type = array_key_exists('ad_type', $post_metadata) ? $post_metadata['ad_type'] : '';
               $this->race = array_key_exists('ad_race', $post_metadata) ? $post_metadata['ad_race'] : '';
               $this->cycle = array_key_exists('ad_cycle', $post_metadata) ? $post_metadata['ad_cycle'] : '';

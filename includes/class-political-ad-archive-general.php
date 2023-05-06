@@ -42,7 +42,6 @@ class PoliticalAdArchiveGeneral {
 
       $this->plugin_name = $plugin_name;
       $this->version = $version;
-
   }
 
     /**
@@ -88,7 +87,6 @@ class PoliticalAdArchiveGeneral {
       $roles = ['author', 'administrator'];
 
     foreach ($roles as $roleName) {
-
   // Get the author role
       $role = get_role($roleName);
 
@@ -104,4 +102,3 @@ class PoliticalAdArchiveGeneral {
     }
   }
 }
-?>

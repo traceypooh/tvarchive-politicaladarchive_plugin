@@ -73,7 +73,6 @@ class PoliticalAdArchiveApiResponse {
     if ($this->data instanceof PoliticalAdArchiveBufferedQuery) {
         $page = 0;
       while (true) {
-
           // Get the chunk
           $chunk = $this->data->get_chunk($page);
 
@@ -98,7 +97,6 @@ class PoliticalAdArchiveApiResponse {
           $page += 1;
       }
         $this->send_end();
-
     }
   }
 
@@ -106,7 +104,6 @@ class PoliticalAdArchiveApiResponse {
   private function send_start($rows) {
     switch ($this->format) {
       case PoliticalAdArchiveApiResponse::FORMAT_CSV:
-
         if (sizeof($rows) == 0)
             return;
         $row = $rows[0];

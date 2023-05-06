@@ -130,5 +130,4 @@ class PoliticalAdArchiveActivator {
         wp_schedule_event(time(), 'hourly', 'archive_sync');
     }
   }
-
 }

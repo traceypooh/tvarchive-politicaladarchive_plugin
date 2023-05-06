@@ -13,7 +13,6 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
     private $posts_per_page;
 
   public function __construct($args = null) {
-
   }
 
   public function __get($property) {

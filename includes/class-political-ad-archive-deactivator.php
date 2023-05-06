@@ -29,5 +29,4 @@ class PoliticalAdArchiveDeactivator {
         wp_unschedule_event(wp_next_scheduled('archive_sync'), 'archive_sync');
     }
   }
-
 }
