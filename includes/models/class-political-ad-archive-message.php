@@ -39,10 +39,10 @@ class PoliticalAdArchiveMessage {
       // Run the query
       $posts_table = $wpdb->prefix . 'posts';
       $meta_table = $wpdb->prefix . 'postmeta';
-      $query = "SELECT DISTINCT ".$meta_table.".meta_value as message
-				    FROM ".$meta_table."
-				    JOIN ".$posts_table." ON ".$meta_table.".post_id = ".$posts_table.".ID
-				   WHERE ".$meta_table.".meta_key LIKE 'ad_message'
+      $query = 'SELECT DISTINCT '.$meta_table.'.meta_value as message
+				    FROM '.$meta_table.'
+				    JOIN '.$posts_table.' ON '.$meta_table.'.post_id = '.$posts_table.'.ID
+				   WHERE '.$meta_table.".meta_key LIKE 'ad_message'
 				     AND ".$posts_table.".post_status = 'publish'";
       $results = $wpdb->get_results($query);
 

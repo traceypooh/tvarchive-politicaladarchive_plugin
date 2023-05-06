@@ -46,14 +46,14 @@ class PoliticalAdArchiveSponsor {
       $sponsors_table = $wpdb->prefix . 'ad_sponsors';
       $posts_table = $wpdb->prefix . 'posts';
       $meta_table = $wpdb->prefix . 'postmeta';
-      $query = "SELECT ".$sponsors_table.".*
-                    FROM ".$sponsors_table."
-				    JOIN (SELECT DISTINCT ".$meta_table.".meta_value as meta_value
-				            FROM ".$meta_table."
-				            JOIN ".$posts_table." ON ".$meta_table.".post_id = ".$posts_table.".ID
-				           WHERE ".$meta_table.".meta_key LIKE 'ad_sponsors_%ad_sponsor'
+      $query = 'SELECT '.$sponsors_table.'.*
+                    FROM '.$sponsors_table.'
+				    JOIN (SELECT DISTINCT '.$meta_table.'.meta_value as meta_value
+				            FROM '.$meta_table.'
+				            JOIN '.$posts_table.' ON '.$meta_table.'.post_id = '.$posts_table.'.ID
+				           WHERE '.$meta_table.".meta_key LIKE 'ad_sponsors_%ad_sponsor'
 				             AND ".$posts_table.".post_status = 'publish') as t
-				      ON ".$sponsors_table.".name = t.meta_value";
+				      ON ".$sponsors_table.'.name = t.meta_value';
 
       $results = $wpdb->get_results($query);
 
@@ -84,8 +84,8 @@ class PoliticalAdArchiveSponsor {
 
       $table_name = $wpdb->prefix . 'ad_sponsors';
 
-      $query = "SELECT *
-                    FROM ".$table_name."
+      $query = 'SELECT *
+                    FROM '.$table_name."
                     WHERE name = '".esc_sql($name)."'
                 LIMIT 0,1";
 
@@ -108,7 +108,7 @@ class PoliticalAdArchiveSponsor {
     } else {
         $sponsor = new PoliticalAdArchiveSponsor();
         $sponsor->name = $name;
-        $sponsor->type = "Unknown";
+        $sponsor->type = 'Unknown';
         $sponsor->in_crp = false;
     }
       return $sponsor;
@@ -127,9 +127,9 @@ class PoliticalAdArchiveSponsor {
           return array();
 
       $table_name = $wpdb->prefix . 'ad_sponsors';
-      $query = "SELECT *
-                    FROM ".$table_name."
-                    WHERE name IN (".implode(",", $sanitized_names).")";
+      $query = 'SELECT *
+                    FROM '.$table_name.'
+                    WHERE name IN ('.implode(',', $sanitized_names).')';
 
       $results = $wpdb->get_results($query);
       $sponsors = array();
@@ -158,7 +158,7 @@ class PoliticalAdArchiveSponsor {
     foreach ($leftover_sponsors as $leftover_sponsor) {
         $sponsor = new PoliticalAdArchiveSponsor();
         $sponsor->name = $leftover_sponsor;
-        $sponsor->type = "Unknown";
+        $sponsor->type = 'Unknown';
         $sponsor->in_crp = false;
         $sponsors[] = $sponsor;
     }

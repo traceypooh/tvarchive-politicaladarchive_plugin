@@ -46,17 +46,17 @@ class PoliticalAdArchiveApiGetAdInstances {
         $instance_search = new PoliticalAdArchiveAdInstanceSearch();
         $instance_search->ad_ids = $search->get_filtered_ids();
 
-        if (array_key_exists("start_time", $_GET))
+        if (array_key_exists('start_time', $_GET))
             $instance_search->start_time = $_GET['start_time'];
 
-        if (array_key_exists("end_time", $_GET))
+        if (array_key_exists('end_time', $_GET))
             $instance_search->end_time = $_GET['end_time'];
 
-        if (array_key_exists("after_id", $_GET))
+        if (array_key_exists('after_id', $_GET))
             $instance_search->after_id = $_GET['after_id'];
 
       if (array_key_exists('output', $_GET)
-        && $_GET['output'] == "csv") {
+        && $_GET['output'] == 'csv') {
         $output = PoliticalAdArchiveApiResponse::FORMAT_CSV;
       } else {
           $output = PoliticalAdArchiveApiResponse::FORMAT_JSON;

@@ -28,10 +28,10 @@ class PoliticalAdArchiveCandidate {
       global $wpdb;
 
       $table_name = $wpdb->prefix . 'ad_candidates';
-      $query = "SELECT *
-                    FROM ".$table_name."
-                    WHERE id = ".(int)($candidate_id)."
-                LIMIT 0,1";
+      $query = 'SELECT *
+                    FROM '.$table_name.'
+                    WHERE id = '.(int)($candidate_id).'
+                LIMIT 0,1';
 
       $result = $wpdb->get_row($query);
 
@@ -89,14 +89,14 @@ class PoliticalAdArchiveCandidate {
       $candidates_table = $wpdb->prefix . 'ad_candidates';
       $posts_table = $wpdb->prefix . 'posts';
       $meta_table = $wpdb->prefix . 'postmeta';
-      $query = "SELECT ".$candidates_table.".*
-                    FROM ".$candidates_table."
-				    JOIN (SELECT DISTINCT ".$meta_table.".meta_value as meta_value
-				            FROM ".$meta_table."
-				            JOIN ".$posts_table." ON ".$meta_table.".post_id = ".$posts_table.".ID
-				           WHERE ".$meta_table.".meta_key LIKE 'ad_candidates_%ad_candidate'
+      $query = 'SELECT '.$candidates_table.'.*
+                    FROM '.$candidates_table.'
+				    JOIN (SELECT DISTINCT '.$meta_table.'.meta_value as meta_value
+				            FROM '.$meta_table.'
+				            JOIN '.$posts_table.' ON '.$meta_table.'.post_id = '.$posts_table.'.ID
+				           WHERE '.$meta_table.".meta_key LIKE 'ad_candidates_%ad_candidate'
 				             AND ".$posts_table.".post_status = 'publish') as t
-				      ON ".$candidates_table.".name = t.meta_value";
+				      ON ".$candidates_table.'.name = t.meta_value';
       $results = $wpdb->get_results($query);
 
       // Package the results
@@ -124,8 +124,8 @@ class PoliticalAdArchiveCandidate {
 
       $table_name = $wpdb->prefix . 'ad_candidates';
 
-      $query = "SELECT *
-                    FROM ".$table_name."
+      $query = 'SELECT *
+                    FROM '.$table_name."
                     WHERE name = '".esc_sql($name)."'
                 LIMIT 0,1";
 
@@ -165,9 +165,9 @@ class PoliticalAdArchiveCandidate {
           return array();
 
       $table_name = $wpdb->prefix . 'ad_candidates';
-      $query = "SELECT *
-                    FROM ".$table_name."
-                    WHERE name IN (".implode(", ", $sanitized_names).")";
+      $query = 'SELECT *
+                    FROM '.$table_name.'
+                    WHERE name IN ('.implode(', ', $sanitized_names).')';
       $results = $wpdb->get_results($query);
 
       $leftover_candidates = $names;
@@ -193,7 +193,7 @@ class PoliticalAdArchiveCandidate {
     foreach ($leftover_candidates as $leftover_candidate) {
         $candidate = new PoliticalAdArchiveSponsor();
         $candidate->name = $leftover_candidate;
-        $candidate->affiliation = "?";
+        $candidate->affiliation = '?';
         $candidate->in_crp = false;
         $candidates[] = $candidate;
     }

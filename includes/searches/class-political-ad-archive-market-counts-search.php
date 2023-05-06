@@ -51,14 +51,14 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 
     // Collect the counts of ads per market
     $table_name = $wpdb->prefix.'ad_instances';
-    $query = "SELECT
+    $query = 'SELECT
               COUNT(*) as ad_count
               ,market as market_code
               ,location as location
-              FROM ".$table_name;
+              FROM '.$table_name;
 
     $query_conditions = array();
-    $query_conditions[] = "wp_identifier IN (".implode(",", $published_ad_ids).")";
+    $query_conditions[] = 'wp_identifier IN ('.implode(',', $published_ad_ids).')';
     if ($this->start_time != null)
       $query_conditions[] = "end_time > '".esc_sql(date('Y-m-d H:i:s', strtotime($this->start_time)))."'";
 
@@ -66,9 +66,9 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
       $query_conditions[] = "start_time < '".esc_sql(date('Y-m-d H:i:s', strtotime($this->end_time)))."'";
 
     if (sizeof($query_conditions) > 0)
-      $query .= " WHERE ".implode(" AND ", $query_conditions);
+      $query .= ' WHERE '.implode(' AND ', $query_conditions);
 
-    $query .= " GROUP BY market_code";
+    $query .= ' GROUP BY market_code';
     $results = $wpdb->get_results($query);
     $rows = array();
     foreach ($results as $market_result) {
@@ -84,9 +84,9 @@ class PoliticalAdArchiveAdMarketCountsSearch implements PoliticalAdArchiveBuffer
 
       // Create the row
       $parsed_row = [
-          "market_code" => $market_code,
-          "location" => $location,
-          "ad_count" => $ad_count,
+          'market_code' => $market_code,
+          'location' => $location,
+          'ad_count' => $ad_count,
       ];
       return $parsed_row;
   }

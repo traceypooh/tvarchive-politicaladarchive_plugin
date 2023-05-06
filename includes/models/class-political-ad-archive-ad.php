@@ -55,7 +55,7 @@ class PoliticalAdArchiveAd {
                 return PoliticalAdArchiveSponsorType::get_friendly_sponsor_type_name($x->type);
               }, $this->sponsors);
               $this->sponsor_types = array_unique($this->sponsor_types);
-              $this->sponsor_types = sizeof($this->sponsor_types) > 1 ? array("Multiple") : $this->sponsor_types;
+              $this->sponsor_types = sizeof($this->sponsor_types) > 1 ? array('Multiple') : $this->sponsor_types;
               $this->sponsor_affiliations = array_map(function ($x) {
                 return $x->single_ad_candidate_id;
               }, $this->sponsors);
@@ -82,7 +82,7 @@ class PoliticalAdArchiveAd {
               $this->first_seen = array_key_exists('first_seen', $post_metadata) ? $post_metadata['first_seen'].' UTC' : '';
               $this->last_seen = array_key_exists('last_seen', $post_metadata) ? $post_metadata['last_seen'].' UTC' : '';
               $this->transcript = array_key_exists('transcript', $post_metadata) ? $post_metadata['transcript'] : '';
-              $this->date_ingested = get_the_date('Y/m/d g:i:s', $wp_id)." UTC";
+              $this->date_ingested = get_the_date('Y/m/d g:i:s', $wp_id).' UTC';
               $this->references = array_key_exists('references', $post_metadata) ? $post_metadata['references'] : array();
               $this->reference_count = is_array($this->references) ? sizeof($this->references) : 0;
   }
@@ -97,12 +97,12 @@ class PoliticalAdArchiveAd {
           global $wpdb;
           $posts_table = $wpdb->prefix . 'posts';
           $meta_table = $wpdb->prefix . 'postmeta';
-          $query = "SELECT DISTINCT ".$meta_table.".post_id as id
-                        FROM ".$meta_table."
-                        JOIN ".$posts_table." ON ".$meta_table.".post_id = ".$posts_table.".ID
-                       WHERE ".$meta_table.".meta_key LIKE 'references_%reference_title'
+          $query = 'SELECT DISTINCT '.$meta_table.'.post_id as id
+                        FROM '.$meta_table.'
+                        JOIN '.$posts_table.' ON '.$meta_table.'.post_id = '.$posts_table.'.ID
+                       WHERE '.$meta_table.".meta_key LIKE 'references_%reference_title'
                          AND ".$posts_table.".post_status = 'publish'
-                    ORDER BY ".$posts_table.".post_date desc";
+                    ORDER BY ".$posts_table.'.post_date desc';
           $results = $wpdb->get_results($query);
 
           // Package the results

@@ -27,10 +27,10 @@ class PoliticalAdArchiveApiGetMarketCounts {
     if (array_key_exists(self::$endpoint_code, $wp->query_vars)) {
       // Set up the search
       $search = new PoliticalAdArchiveAdMarketCountsSearch();
-      if (array_key_exists("start_time", $_GET))
+      if (array_key_exists('start_time', $_GET))
         $search->start_time = $_GET['start_time'];
 
-      if (array_key_exists("end_time", $_GET))
+      if (array_key_exists('end_time', $_GET))
         $search->end_time = $_GET['end_time'];
 
       // Set up the response

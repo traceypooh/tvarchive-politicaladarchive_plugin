@@ -43,11 +43,11 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
     $sponsors_table = $wpdb->prefix.'ad_sponsors';
 
     // Collect the counts of ads per market
-    $query = "SELECT ".$sponsors_table.".*
-                FROM ".$sponsors_table."
-                JOIN ".$postmeta_table." ON ".$postmeta_table.".meta_value = ".$sponsors_table.".name
-                JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
-               WHERE ".$postmeta_table.".meta_key LIKE 'ad_sponsors_%ad_sponsor'
+    $query = 'SELECT '.$sponsors_table.'.*
+                FROM '.$sponsors_table.'
+                JOIN '.$postmeta_table.' ON '.$postmeta_table.'.meta_value = '.$sponsors_table.'.name
+                JOIN '.$post_table.' ON '.$postmeta_table.'.post_id = '.$post_table.'.ID
+               WHERE '.$postmeta_table.".meta_key LIKE 'ad_sponsors_%ad_sponsor'
                  AND ".$post_table.".post_status = 'publish'
             GROUP BY name
             ORDER BY ad_count DESC";
@@ -69,10 +69,10 @@ class PoliticalAdArchiveAdSponsorSearch implements PoliticalAdArchiveBufferedQue
 
       // Create the row
       $parsed_row = [
-          "name" => $name,
-          "race" => $race,
-          "type" => $type,
-          "ad_count" => $ad_count
+          'name' => $name,
+          'race' => $race,
+          'type' => $type,
+          'ad_count' => $ad_count
       ];
       return $parsed_row;
   }

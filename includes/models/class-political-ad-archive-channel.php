@@ -39,10 +39,10 @@ class PoliticalAdArchiveChannel {
       // Run the query
       $posts_table = $wpdb->prefix . 'posts';
       $instances_table = $wpdb->prefix . 'ad_instances';
-      $query = "SELECT DISTINCT ".$instances_table.".network as network
-				    FROM ".$instances_table."
-				    JOIN ".$posts_table." ON ".$instances_table.".wp_identifier = ".$posts_table.".ID
-				   WHERE ".$posts_table.".post_status = 'publish'";
+      $query = 'SELECT DISTINCT '.$instances_table.'.network as network
+				    FROM '.$instances_table.'
+				    JOIN '.$posts_table.' ON '.$instances_table.'.wp_identifier = '.$posts_table.'.ID
+				   WHERE '.$posts_table.".post_status = 'publish'";
       $results = $wpdb->get_results($query);
 
       // Package the results

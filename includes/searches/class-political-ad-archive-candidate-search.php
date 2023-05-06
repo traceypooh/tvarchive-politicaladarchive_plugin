@@ -41,11 +41,11 @@ class PoliticalAdArchiveAdCandidateSearch implements PoliticalAdArchiveBufferedQ
     $candidates_table = $wpdb->prefix.'ad_candidates';
 
     // Collect the counts of ads per market
-    $query = "SELECT ".$candidates_table.".id
-                FROM ".$candidates_table."
-                JOIN ".$postmeta_table." ON ".$postmeta_table.".meta_value = ".$candidates_table.".name
-                JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
-               WHERE ".$postmeta_table.".meta_key LIKE 'ad_candidates_%ad_candidate'
+    $query = 'SELECT '.$candidates_table.'.id
+                FROM '.$candidates_table.'
+                JOIN '.$postmeta_table.' ON '.$postmeta_table.'.meta_value = '.$candidates_table.'.name
+                JOIN '.$post_table.' ON '.$postmeta_table.'.post_id = '.$post_table.'.ID
+               WHERE '.$postmeta_table.".meta_key LIKE 'ad_candidates_%ad_candidate'
                  AND ".$post_table.".post_status = 'publish'
             GROUP BY name
             ORDER BY ad_count DESC";

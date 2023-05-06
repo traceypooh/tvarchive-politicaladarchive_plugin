@@ -63,7 +63,7 @@ class PoliticalAdArchiveAdmin {
       $sponsors = get_field('ad_sponsors', $post->ID) ?: array();
 
     foreach ($sponsors as $sponsor) {
-        $sponsor_name = $sponsor["ad_sponsor"];
+        $sponsor_name = $sponsor['ad_sponsor'];
         $sponsor_object = PoliticalAdArchiveSponsor::get_sponsor_by_name($sponsor_name);
       if (!$sponsor_object ||
             $sponsor_object->in_crp == false) {
@@ -77,7 +77,7 @@ class PoliticalAdArchiveAdmin {
       $candidates = get_field('ad_candidates', $post->ID) ?: array();
 
     foreach ($candidates as $candidate) {
-        $candidate_name = $candidate["ad_candidate"];
+        $candidate_name = $candidate['ad_candidate'];
         $candidate_object = PoliticalAdArchiveCandidate::get_candidate_by_name($candidate_name);
       if (!$candidate_object||
             $candidate_object->in_crp == false) {
@@ -144,7 +144,7 @@ class PoliticalAdArchiveAdmin {
       set_time_limit(0);
       ini_set('max_execution_time', 0);
 
-      error_log("Loading Ad Metadata");
+      error_log('Loading Ad Metadata');
       global $wpdb;
       $transcript_lookup = $this->get_transcripts();
       $canonical_ad_lookup = $this->get_ad_list();
@@ -171,11 +171,11 @@ class PoliticalAdArchiveAdmin {
 
       if ($is_queued_for_reset
         && array_key_exists($ad_identifier, $canonical_ad_lookup)) {
-          error_log("Refreshing metadata for ".$ad_identifier);
+          error_log('Refreshing metadata for '.$ad_identifier);
           $metadata = $canonical_ad_lookup[$ad_identifier]->json;
           $ad_embed_url = 'https://archive.org/embed/'.$ad_identifier;
-          $ad_type = "Political Ad";
-          $ad_race = "";
+          $ad_type = 'Political Ad';
+          $ad_race = '';
           $ad_message = property_exists($metadata, 'message') ? $metadata->message : 'unknown'; // xxx went missing from API
           // Check if message is an array (unclear why this happens sometimes)
           $ad_message = is_array($ad_message) ? array_pop($ad_message) : $ad_message;
@@ -201,8 +201,8 @@ class PoliticalAdArchiveAdmin {
           update_field('field_566e32bd943a4', $sponsors, $wp_identifier);
 
           // We're going to look up race / cycle from the candidate
-          $race = "";
-          $cycle = "";
+          $race = '';
+          $cycle = '';
 
           // Store the candidates
           $candidates = array();
@@ -210,7 +210,7 @@ class PoliticalAdArchiveAdmin {
           && is_array($metadata->candidate)) {
           foreach ($metadata->candidate as $candidate) {
               // Look up the race / cycle information
-            if ($race == "") {
+            if ($race == '') {
               $candidate_object = PoliticalAdArchiveCandidate::get_candidate_by_name($candidate);
               $race = $candidate_object->race;
               $cycle = $candidate_object->cycle;
@@ -257,7 +257,7 @@ class PoliticalAdArchiveAdmin {
       set_time_limit(0);
       ini_set('max_execution_time', 0);
 
-      error_log("Loading Ad Instances");
+      error_log('Loading Ad Instances');
       global $wpdb;
       $network_lookup = $this->get_network_lookup();
       $market_translations = $this->get_market_translations();
@@ -271,19 +271,19 @@ class PoliticalAdArchiveAdmin {
 
       // For each ad, load the ad instances associated
     foreach ($existing_ads as $count => $existing_ad) {
-        error_log("(".$count."/".sizeof($existing_ads).")"." Loading Instances for ".$existing_ad->post_title);
+        error_log('('.$count.'/'.sizeof($existing_ads).')'.' Loading Instances for '.$existing_ad->post_title);
       try {
         $wp_identifier = $existing_ad->ID;
         $ad_identifier = $existing_ad->post_title;
 
         // Get the list of instances alraedy stored to prevent duplicate entry attempts
         $table_name = $wpdb->prefix . 'ad_instances';
-        $query = "SELECT id as id,
+        $query = 'SELECT id as id,
                                  network as network,
                                  start_time as start_time,
                                  archive_identifier as archive_identifier,
                                  wp_identifier as wp_identifier
-                            FROM ".$table_name."
+                            FROM '.$table_name."
                            WHERE archive_identifier = '".esc_sql($ad_identifier)."'";
         $results = $wpdb->get_results($query);
 
@@ -294,7 +294,7 @@ class PoliticalAdArchiveAdmin {
           if (!array_key_exists($network, $existing_instances)) {
             $existing_instances[$network] = array();
           }
-            $existing_instances[$network][] = "".strtotime($start_time);
+            $existing_instances[$network][] = ''.strtotime($start_time);
         }
 
         // STEP 2: Get every instance, and create a record for each instance
@@ -310,8 +310,8 @@ class PoliticalAdArchiveAdmin {
         // If this is a house or senate ad, set up a regional override...
         $ad_race = get_field('ad_race', $wp_identifier);
         $market_overrides = array();
-        if ($ad_race != ""
-        && $ad_race != "PRES") {
+        if ($ad_race != ''
+        && $ad_race != 'PRES') {
             $ad_state = substr($ad_race, 0, 2);
             error_log('Ad State: "'.$ad_state.'"');
             $market_overrides = $this->get_market_overrides_by_state($ad_state);
@@ -322,15 +322,15 @@ class PoliticalAdArchiveAdmin {
             $network = $instance->chan;
             $market = array_key_exists($network, $network_lookup) ? $network_lookup[$network]['market'] : '';
             $location = array_key_exists($market, $market_translations) ? $market_translations[$market] : '';
-            $start_time = date("Y-m-d H:i:s", intval($instance->start));
-            $end_time = date("Y-m-d H:i:s", intval($instance->end));
-            $date_created = date("Y-m-d H:i:s");
+            $start_time = date('Y-m-d H:i:s', intval($instance->start));
+            $end_time = date('Y-m-d H:i:s', intval($instance->end));
+            $date_created = date('Y-m-d H:i:s');
             $program = $instance->title;
             $program_type = $instance->program_type;
 
             // Does this instance already exist in our database?
             if (array_key_exists($network, $existing_instances)
-            && array_search("".strtotime($start_time), $existing_instances[$network]) !== false)
+            && array_search(''.strtotime($start_time), $existing_instances[$network]) !== false)
                 continue;
 
             // Does this instance happen in a market we care about
@@ -343,13 +343,13 @@ class PoliticalAdArchiveAdmin {
             // If the start time isn't within the override range, skip this airing
             if ($start_override != null
             && strtotime($start_override) > strtotime($start_time)) {
-                error_log("Skipped start override: ".$start_time);
+                error_log('Skipped start override: '.$start_time);
                 continue;
             }
 
             if ($end_override != null
             && strtotime($end_override) < strtotime($start_time)) {
-                error_log("Skipped end override: ".$start_time);
+                error_log('Skipped end override: '.$start_time);
                 continue;
             }
 
@@ -404,15 +404,15 @@ class PoliticalAdArchiveAdmin {
       $post_table = $wpdb->prefix . 'posts';
 
       // Update ad air counts
-      error_log("Updating Ad Air Counts");
-      $query = "SELECT count(*) as air_count,
+      error_log('Updating Ad Air Counts');
+      $query = 'SELECT count(*) as air_count,
                          count(DISTINCT network) as network_count,
                          count(DISTINCT market) as market_count,
                          MIN(start_time) as first_seen,
                          MAX(start_time) as last_seen,
                          wp_identifier as wp_identifier
-                    FROM ".$instances_table."
-                GROUP BY wp_identifier";
+                    FROM '.$instances_table.'
+                GROUP BY wp_identifier';
 
       $results = $wpdb->get_results($query);
       $air_metadata = array();
@@ -423,47 +423,47 @@ class PoliticalAdArchiveAdmin {
         update_field('field_566e3697962e3', $result->network_count, $wp_identifier); // network_count
         update_field('field_566e36b0962e4', $result->first_seen, $wp_identifier); // first_seen
         update_field('field_566e36d5962e5', $result->last_seen,  $wp_identifier); // last_seen
-        error_log("Updating ID ".$wp_identifier.": ".print_r($result, true));
+        error_log('Updating ID '.$wp_identifier.': '.print_r($result, true));
     }
 
       // Update candidate air counts
-      error_log("Updating Candidate Counts");
-      $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
-                         count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
+      error_log('Updating Candidate Counts');
+      $query = 'SELECT count(DISTINCT '.$instances_table.'.id) as air_count,
+                         count(DISTINCT '.$postmeta_table.'.post_id) as ad_count,
                          meta_value as ad_candidate
-                    FROM ".$postmeta_table."
-                    JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
-               LEFT JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
-                   WHERE ".$post_table.".post_status = 'publish'
+                    FROM '.$postmeta_table.'
+                    JOIN '.$post_table.' ON '.$postmeta_table.'.post_id = '.$post_table.'.ID
+               LEFT JOIN '.$instances_table.' ON '.$postmeta_table.'.post_id = '.$instances_table.'.wp_identifier
+                   WHERE '.$post_table.".post_status = 'publish'
                      AND meta_key LIKE 'ad_candidates_%_ad_candidate'
-                GROUP BY ".$postmeta_table.".meta_value";
+                GROUP BY ".$postmeta_table.'.meta_value';
 
       $results = $wpdb->get_results($query);
       $air_metadata = array();
     foreach ($results as $result) {
-        $query = "UPDATE ".$candidates_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_candidate)."'";
+        $query = 'UPDATE '.$candidates_table.' SET ad_count = '.$result->ad_count.', air_count = '.$result->air_count." where name = '".esc_sql($result->ad_candidate)."'";
         $wpdb->query($query);
     }
 
       // Update sponsor air counts
-      error_log("Updating Sponsor Counts");
-      $query = "SELECT count(DISTINCT ".$instances_table.".id) as air_count,
-                         count(DISTINCT ".$postmeta_table.".post_id) as ad_count,
+      error_log('Updating Sponsor Counts');
+      $query = 'SELECT count(DISTINCT '.$instances_table.'.id) as air_count,
+                         count(DISTINCT '.$postmeta_table.'.post_id) as ad_count,
                          meta_value as ad_sponsor
-                    FROM ".$postmeta_table."
-                    JOIN ".$post_table." ON ".$postmeta_table.".post_id = ".$post_table.".ID
-               LEFT JOIN ".$instances_table." ON ".$postmeta_table.".post_id = ".$instances_table.".wp_identifier
-                   WHERE ".$post_table.".post_status = 'publish'
+                    FROM '.$postmeta_table.'
+                    JOIN '.$post_table.' ON '.$postmeta_table.'.post_id = '.$post_table.'.ID
+               LEFT JOIN '.$instances_table.' ON '.$postmeta_table.'.post_id = '.$instances_table.'.wp_identifier
+                   WHERE '.$post_table.".post_status = 'publish'
                      AND meta_key LIKE 'ad_sponsors_%_ad_sponsor'
-                GROUP BY ".$postmeta_table.".meta_value";
+                GROUP BY ".$postmeta_table.'.meta_value';
 
       $results = $wpdb->get_results($query);
       $air_metadata = array();
     foreach ($results as $result) {
-        $query = "UPDATE ".$sponsors_table." SET ad_count = ".$result->ad_count.", air_count = ".$result->air_count." where name = '".esc_sql($result->ad_sponsor)."'";
+        $query = 'UPDATE '.$sponsors_table.' SET ad_count = '.$result->ad_count.', air_count = '.$result->air_count." where name = '".esc_sql($result->ad_sponsor)."'";
         $wpdb->query($query);
     }
-      error_log("Finished Updating Counts");
+      error_log('Finished Updating Counts');
   }
 
   public function load_candidates() {
@@ -471,7 +471,7 @@ class PoliticalAdArchiveAdmin {
       set_time_limit(0);
       ini_set('max_execution_time', 0);
 
-      error_log("Loading Candidates");
+      error_log('Loading Candidates');
       global $wpdb;
       $api_key = get_field('open_secrets_api_key', 'option');
       $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json'; // xxx "key does not have access to this method"
@@ -479,9 +479,9 @@ class PoliticalAdArchiveAdmin {
       // Load existing candidates
       $table_name = $wpdb->prefix . 'ad_candidates';
 
-      $query = "SELECT id as id,
+      $query = 'SELECT id as id,
                          crp_unique_id as crp_unique_id
-                    FROM ".$table_name;
+                    FROM '.$table_name;
 
       $results = $wpdb->get_results($query);
       $existing_candidates = array();
@@ -506,18 +506,18 @@ class PoliticalAdArchiveAdmin {
         $sponsor = $sponsor->{'@attributes'};
 
         // We only care about candidates
-        if ($sponsor->type != "cand")
+        if ($sponsor->type != 'cand')
             continue;
 
         // Double check to make sure it fits the expected pattern
-        if (substr($sponsor->sponsorname, -1) != ")")
+        if (substr($sponsor->sponsorname, -1) != ')')
             continue;
 
         // Make sure the record is valid
-        if ($sponsor->uniqueid == "")
+        if ($sponsor->uniqueid == '')
             continue;
 
-        error_log("Loading Candidate: ".$sponsor->sponsorname." (".$sponsor->uniqueid.")");
+        error_log('Loading Candidate: '.$sponsor->sponsorname.' ('.$sponsor->uniqueid.')');
 
         $id = 0;
         $name = substr($sponsor->sponsorname, 0, -4);
@@ -525,7 +525,7 @@ class PoliticalAdArchiveAdmin {
         $race = $sponsor->race;
         $cycle = $sponsor->cycle;
         $crp_unique_id = $sponsor->uniqueid;
-        $date_created = date("Y-m-d H:i:s");
+        $date_created = date('Y-m-d H:i:s');
 
         $values = array(
             'crp_unique_id' => $crp_unique_id,
@@ -564,7 +564,7 @@ class PoliticalAdArchiveAdmin {
       set_time_limit(0);
       ini_set('max_execution_time', 0);
 
-      error_log("Loading Sponsors");
+      error_log('Loading Sponsors');
       global $wpdb;
       $api_key = get_field('open_secrets_api_key', 'option');
       $url = 'http://www.opensecrets.org/api/index.php?method=internetArchive&apikey='.$api_key.'&output=json'; // xxx "key does not have access to this method"
@@ -572,9 +572,9 @@ class PoliticalAdArchiveAdmin {
       // Load existing sponsors
       $table_name = $wpdb->prefix . 'ad_sponsors';
 
-      $query = "SELECT id as id,
+      $query = 'SELECT id as id,
                          crp_unique_id as crp_unique_id
-                    FROM ".$table_name;
+                    FROM '.$table_name;
 
       $results = $wpdb->get_results($query);
       $existing_sponsors = array();
@@ -601,36 +601,36 @@ class PoliticalAdArchiveAdmin {
         $sponsor = $sponsor->{'@attributes'};
 
         // We only care about candidates
-        if ($sponsor->type == "cand")
+        if ($sponsor->type == 'cand')
             continue;
 
         // Skip sponsors with a blank type
         // This is a bug on CRPs end
-        if ($sponsor->type == "")
+        if ($sponsor->type == '')
             continue;
 
         // Make sure the record is valid
-        if ($sponsor->uniqueid == "")
+        if ($sponsor->uniqueid == '')
             continue;
 
-        error_log("Loading Sponsor: ".$sponsor->sponsorname." (".$sponsor->uniqueid.")");
+        error_log('Loading Sponsor: '.$sponsor->sponsorname.' ('.$sponsor->uniqueid.')');
 
         $name = $sponsor->sponsorname;
         $race = $sponsor->race;
         $cycle = $sponsor->cycle;
         $crp_unique_id = $sponsor->uniqueid.$name; // TODO: remove name from unique ID
         $type = $sponsor->type;
-        if ($sponsor->c4 != "")
-            $type .= "4";
-        if ($sponsor->c5 != "")
-            $type .= "5";
-        if ($sponsor->c6 != "")
-            $type .= "6";
+        if ($sponsor->c4 != '')
+            $type .= '4';
+        if ($sponsor->c5 != '')
+            $type .= '5';
+        if ($sponsor->c6 != '')
+            $type .= '6';
 
         $single_ad_candidate_id = $sponsor->singlecandCID;
-        $does_support_candidate = ($sponsor->suppopp == "") ? false : true;
+        $does_support_candidate = ($sponsor->suppopp == '') ? false : true;
 
-        $date_created = date("Y-m-d H:i:s");
+        $date_created = date('Y-m-d H:i:s');
 
         $table_name = $wpdb->prefix . 'ad_sponsors';
         $values = array(
@@ -709,31 +709,31 @@ class PoliticalAdArchiveAdmin {
 
   private function get_market_translations() {
       return array(
-          "BOS" => "Boston, MA/Manchester, NH",
-          "CAE" => "Columbia, SC",
-          "CID" => "Ceder Rapids-Waterloo-Iowa City-Dublin, Iowa",
-          "CLE" => "Cleveland, Ohio",
-          "CLT" => "Charlotte, NC",
-          "COS" => "Colorado Springs-Pueblo, CO",
-          "CVG" => "Cincinnati, OH",
-          "DEN" => "Denver, CO",
-          "DSM" => "Des Moines-Ames, Iowa",
-          "GSP" => "Greenville-Spartanburg, SC/Asheville-Anderson, NC",
-          "LAS" => "Las Vegas, NV",
-          "MCO" => "Orlando-Daytona Beach-Melbourne, FL",
-          "MIA" => "Miami-Fort Lauderdale, FL",
-          "NYC" => "New York City, NY",
-          "ORF" => "Norfolk-Portsmouth-Newport News, NC",
-          "PHL" => "Philadelphia, PA",
-          "RDU" => "Raleigh-Durham-Fayetteville,  NC",
-          "RNO" => "Reno, NV",
-          "ROA" => "Roanoke-Lynchburg, VA",
-          "MKE" => "Milwaukee, WI",
-          "PHX" => "Phoenix-Prescott, AZ",
-          "SF" => "San Francisco-Oakland-San Jose, CA",
-          "SUX" => "Sioux City, Iowa",
-          "TPA" => "Tampa-St. Petersburg, FL",
-          "VA" => "Washington, DC/Hagerstown, MD"
+          'BOS' => 'Boston, MA/Manchester, NH',
+          'CAE' => 'Columbia, SC',
+          'CID' => 'Ceder Rapids-Waterloo-Iowa City-Dublin, Iowa',
+          'CLE' => 'Cleveland, Ohio',
+          'CLT' => 'Charlotte, NC',
+          'COS' => 'Colorado Springs-Pueblo, CO',
+          'CVG' => 'Cincinnati, OH',
+          'DEN' => 'Denver, CO',
+          'DSM' => 'Des Moines-Ames, Iowa',
+          'GSP' => 'Greenville-Spartanburg, SC/Asheville-Anderson, NC',
+          'LAS' => 'Las Vegas, NV',
+          'MCO' => 'Orlando-Daytona Beach-Melbourne, FL',
+          'MIA' => 'Miami-Fort Lauderdale, FL',
+          'NYC' => 'New York City, NY',
+          'ORF' => 'Norfolk-Portsmouth-Newport News, NC',
+          'PHL' => 'Philadelphia, PA',
+          'RDU' => 'Raleigh-Durham-Fayetteville,  NC',
+          'RNO' => 'Reno, NV',
+          'ROA' => 'Roanoke-Lynchburg, VA',
+          'MKE' => 'Milwaukee, WI',
+          'PHX' => 'Phoenix-Prescott, AZ',
+          'SF' => 'San Francisco-Oakland-San Jose, CA',
+          'SUX' => 'Sioux City, Iowa',
+          'TPA' => 'Tampa-St. Petersburg, FL',
+          'VA' => 'Washington, DC/Hagerstown, MD'
       );
   }
 
@@ -760,105 +760,105 @@ class PoliticalAdArchiveAdmin {
 
   private function get_market_overrides_by_state($state_code) {
     switch ($state_code) {
-      case "AL":
+      case 'AL':
             return array();
-      case "AK":
+      case 'AK':
             return array();
-      case "AZ":
-            return array("PHX");
-      case "AR":
+      case 'AZ':
+            return array('PHX');
+      case 'AR':
             return array();
-      case "CA":
-            return array("SF");
-      case "CO":
-            return array("COS", "DEN");
-      case "CT":
+      case 'CA':
+            return array('SF');
+      case 'CO':
+            return array('COS', 'DEN');
+      case 'CT':
             return array();
-      case "DE":
+      case 'DE':
             return array();
-      case "FL":
-            return array("MCO", "MIA", "TPA");
-      case "GA":
+      case 'FL':
+            return array('MCO', 'MIA', 'TPA');
+      case 'GA':
             return array();
-      case "HI":
+      case 'HI':
             return array();
-      case "ID":
+      case 'ID':
             return array();
-      case "IL":
+      case 'IL':
             return array();
-      case "IN":
+      case 'IN':
             return array();
-      case "IA":
-            return array("CID", "DSM", "SUX");
-      case "KS":
+      case 'IA':
+            return array('CID', 'DSM', 'SUX');
+      case 'KS':
             return array();
-      case "KY":
+      case 'KY':
             return array();
-      case "LA":
+      case 'LA':
             return array();
-      case "ME":
+      case 'ME':
             return array();
-      case "MD":
-            return array("VA");
-      case "MA":
-            return array("BOS");
-      case "MI":
+      case 'MD':
+            return array('VA');
+      case 'MA':
+            return array('BOS');
+      case 'MI':
             return array();
-      case "MN":
+      case 'MN':
             return array();
-      case "MS":
+      case 'MS':
             return array();
-      case "MO":
+      case 'MO':
             return array();
-      case "MT":
+      case 'MT':
             return array();
-      case "NE":
+      case 'NE':
             return array();
-      case "NV":
-            return array("LAS", "RNO");
-      case "NH":
-            return array("BOS");
-      case "NJ":
+      case 'NV':
+            return array('LAS', 'RNO');
+      case 'NH':
+            return array('BOS');
+      case 'NJ':
             return array();
-      case "NM":
+      case 'NM':
             return array();
-      case "NY":
-            return array("NYC");
-      case "NC":
-            return array("CLT", "GSP", "ORF", "RDU");
-      case "ND":
+      case 'NY':
+            return array('NYC');
+      case 'NC':
+            return array('CLT', 'GSP', 'ORF', 'RDU');
+      case 'ND':
             return array();
-      case "OH":
-            return array("CLE", "CVG");
-      case "OK":
+      case 'OH':
+            return array('CLE', 'CVG');
+      case 'OK':
             return array();
-      case "OR":
+      case 'OR':
             return array();
-      case "PA":
-            return array("PHL");
-      case "RI":
-            return array("BOS");
-      case "SC":
-            return array("CAE");
-      case "SD":
+      case 'PA':
+            return array('PHL');
+      case 'RI':
+            return array('BOS');
+      case 'SC':
+            return array('CAE');
+      case 'SD':
             return array();
-      case "TN":
+      case 'TN':
             return array();
-      case "TX":
+      case 'TX':
             return array();
-      case "UT":
+      case 'UT':
             return array();
-      case "VT":
-            return array("BOS");
-      case "VA":
-            return array("ROA");
-      case "WA":
+      case 'VT':
+            return array('BOS');
+      case 'VA':
+            return array('ROA');
+      case 'WA':
             return array();
-      case "WV":
+      case 'WV':
             return array();
-      case "WI":
-            return array("MKE");
-      case "WY":
+      case 'WI':
+            return array('MKE');
+      case 'WY':
             return array();
       default:
             return array();
@@ -882,14 +882,14 @@ class PoliticalAdArchiveAdmin {
   private function get_air_metadata() {
       global $wpdb;
       $table_name = $wpdb->prefix . 'ad_instances';
-      $query = "SELECT count(*) as air_count,
+      $query = 'SELECT count(*) as air_count,
                          count(DISTINCT network) as network_count,
                          count(DISTINCT market) as market_count,
                          MIN(start_time) as first_seen,
                          MAX(start_time) as last_seen,
                          archive_identifier as archive_identifier
-                    FROM ".$table_name."
-                GROUP BY archive_identifier";
+                    FROM '.$table_name.'
+                GROUP BY archive_identifier';
 
       $results = $wpdb->get_results($query);
       $air_metadata = array();

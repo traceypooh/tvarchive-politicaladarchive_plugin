@@ -10,8 +10,8 @@
  */
 class PoliticalAdArchiveApiResponse {
 
-    const FORMAT_JSON = "json";
-    const FORMAT_CSV = "csv";
+    const FORMAT_JSON = 'json';
+    const FORMAT_CSV = 'csv';
 
     private $data; // The array of data to be included
     private $format; // The format that the data should be printed as
@@ -87,7 +87,7 @@ class PoliticalAdArchiveApiResponse {
           // If this is JSON we need to delimit chunks
           if ($this->format == PoliticalAdArchiveApiResponse::FORMAT_JSON
           && $page > 0)
-              echo(",");
+              echo(',');
 
 
           // Send the chunk
@@ -167,7 +167,7 @@ class PoliticalAdArchiveApiResponse {
       case PoliticalAdArchiveApiResponse::FORMAT_CSV:
             break;
       case PoliticalAdArchiveApiResponse::FORMAT_JSON:
-          echo("]}");
+          echo(']}');
             break;
     }
   }
